@@ -478,7 +478,7 @@ MonoBehaviour:
   mainCamera: {fileID: 1737942474}
   fishPrefab: {fileID: 919132149155446097, guid: 6b33e2402e63a2e45893128d699bc5f3, type: 3}
   placementDistance: 2
-  fishScale: 0.3
+  fishScale: 1
 --- !u!4 &1712017652
 Transform:
   m_ObjectHideFlags: 0

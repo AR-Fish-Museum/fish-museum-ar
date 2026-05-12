@@ -6,8 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Project/Scenes/00_Bootstrap.unity
+    guid: 619c513b457e5ef42a7fb64b22502f19
+  - enabled: 1
     path: Assets/_Project/Scenes/01_AR_Museum.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/_Project/Scenes/02_Webcam_Test.unity
+    guid: f2253128665db43448b1d95b35c17282
   m_configObjects:
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: cbc58ba752320c8479b53576b5d4f199, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
