@@ -1192,8 +1192,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishPlacementController
   raycastManager: {fileID: 2041154610}
-  fishPrefab: {fileID: 9070876577162484569, guid: 8c4de58d5183cb64e85ab33d9e6f1b9c, type: 3}
+  fishPrefab: {fileID: 1685594168162994303, guid: e23256ac07bb2aa4d8d487c1eaddf8bf, type: 3}
   instructionController: {fileID: 1255131208}
+  verticalOffset: 0.03
+  modelScale: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

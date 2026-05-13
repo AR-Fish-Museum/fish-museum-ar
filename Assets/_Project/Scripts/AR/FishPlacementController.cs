@@ -11,6 +11,10 @@ public class FishPlacementController : MonoBehaviour
     [SerializeField] private GameObject fishPrefab;
     [SerializeField] private ARInstructionController instructionController;
 
+    [Header("Placement Settings")]
+    [SerializeField] private float verticalOffset = 0.03f;
+    [SerializeField] private float modelScale = 1f;
+
     private static readonly List<ARRaycastHit> hits = new();
     private GameObject spawnedFish;
 
@@ -34,17 +38,9 @@ public class FishPlacementController : MonoBehaviour
         if (raycastManager.Raycast(inputPosition.Value, hits, TrackableType.PlaneWithinPolygon))
         {
             Pose hitPose = hits[0].pose;
+            Vector3 spawnPosition = hitPose.position + Vector3.up * verticalOffset;
 
-            if (spawnedFish == null)
-            {
-                spawnedFish = Instantiate(fishPrefab, hitPose.position, hitPose.rotation);
-            }
-            else
-            {
-                spawnedFish.transform.SetPositionAndRotation(hitPose.position, hitPose.rotation);
-            }
-
-            instructionController?.OnFishPlaced();
+            PlaceFish(spawnPosition);
         }
     }
 
@@ -66,5 +62,22 @@ public class FishPlacementController : MonoBehaviour
         }
 
         return null;
+    }
+
+    private void PlaceFish(Vector3 position)
+    {
+        if (spawnedFish == null)
+        {
+            spawnedFish = Instantiate(fishPrefab, position, Quaternion.identity);
+            spawnedFish.transform.localScale = Vector3.one * modelScale;
+        }
+        else
+        {
+            spawnedFish.transform.position = position;
+        }
+
+        instructionController?.OnFishPlaced();
+
+        Debug.Log("Fish placed: " + spawnedFish.name + " at " + position);
     }
 }
