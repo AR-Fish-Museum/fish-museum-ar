@@ -9,6 +9,7 @@ public class FishPlacementController : MonoBehaviour
 {
     [SerializeField] private ARRaycastManager raycastManager;
     [SerializeField] private GameObject fishPrefab;
+    [SerializeField] private ARInstructionController instructionController;
 
     private static readonly List<ARRaycastHit> hits = new();
     private GameObject spawnedFish;
@@ -42,6 +43,8 @@ public class FishPlacementController : MonoBehaviour
             {
                 spawnedFish.transform.SetPositionAndRotation(hitPose.position, hitPose.rotation);
             }
+
+            instructionController?.OnFishPlaced();
         }
     }
 
