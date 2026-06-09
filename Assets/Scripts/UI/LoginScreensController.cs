@@ -261,18 +261,30 @@ namespace FishMuseum.UI
 
         private void OnJoinAsGuest()
         {
-            Debug.Log("[LoginScreensController] Misafir girişi yapıldı, ana ekrana geçiliyor...");
-    
-            // Geçiş Şalteri: Eğer yeni arayüz objesi bağlandıysa geçişi yap
-            if (mainAppUIObject != null)
+            Debug.Log("[LoginScreensController] Misafir girişi yapıldı, balık galerisine geçiliyor...");
+
+            // Oturumu misafir olarak işaretle (IsGuest=true, StudentName="Misafir", Score=0)
+            if (GameSession.Instance != null)
             {
-                mainAppUIObject.SetActive(true);  // Alt barlı yeni UI'ı aç
-                this.gameObject.SetActive(false); // Login UI'ını (kendini) gizle
+                GameSession.Instance.SetGuestSession();
             }
             else
             {
-                Debug.LogWarning("Ana ekran objesi bağlanmamış! Geçici olarak AR sahnesi yükleniyor.");
-                sceneLoader?.LoadRealARScene();
+                Debug.LogError("[LoginScreensController] GameSession.Instance null — " +
+                               "LoginScene içinde GameSession objesinin bulunduğundan emin olun. " +
+                               "Misafir oturumu kaydedilemeden devam ediliyor.");
+            }
+
+            // Misafir → AR balık keşif sahnesine geç (MainApp_UI açılmaz, login UI kapatılmaz)
+            if (sceneLoader != null)
+            {
+                sceneLoader.LoadFishGalleryScene();
+            }
+            else
+            {
+                Debug.LogError("[LoginScreensController] sceneLoader null — " +
+                               "Inspector'dan SceneLoader referansı bağlanmamış. " +
+                               "Misafir AR sahnesine geçemedi.");
             }
         }
 
@@ -310,8 +322,36 @@ namespace FishMuseum.UI
                 return;
             }
 
+            // PIN doğru — grup oturumunu kaydet
+            if (GameSession.Instance != null)
+            {
+                string studentName = string.IsNullOrEmpty(fullName) ? "Öğrenci" : fullName;
+                GameSession.Instance.SetClassSession(
+                    studentName,
+                    CurrentClass.id,
+                    CurrentClass.class_name);
+            }
+            else
+            {
+                Debug.LogError("[LoginScreensController] GameSession.Instance null — " +
+                               "LoginScene içinde GameSession objesinin bulunduğundan emin olun. " +
+                               "Grup oturumu kaydedilemeden devam ediliyor.");
+            }
+
             if (_pinFeedback != null) _pinFeedback.text = $"Hoş geldin, {fullName}!";
-            sceneLoader?.LoadRealARScene();
+
+            // AR sahnesine geçilmez — aynı sahnede ana uygulama UI'ına geçilir
+            if (mainAppUIObject != null)
+            {
+                mainAppUIObject.SetActive(true);  // Öğrenci/quiz ekranını aç
+                this.gameObject.SetActive(false); // Login UI'ını (kendini) gizle
+            }
+            else
+            {
+                Debug.LogError("[LoginScreensController] mainAppUIObject null — " +
+                               "Ana uygulama UI objesi Inspector'dan bağlanmamış. " +
+                               "Grup girişi sonrası ekran açılamadı.");
+            }
         }
 
         // ══════════════════════════════════════════════════════════════
