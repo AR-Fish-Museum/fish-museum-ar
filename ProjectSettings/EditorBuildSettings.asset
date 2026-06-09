@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Project/Scenes/LoginScene.unity
+    guid: d6701acdd03c64f42963b4f81de82989
+  - enabled: 1
     path: Assets/_Project/Scenes/00_Bootstrap.unity
     guid: 619c513b457e5ef42a7fb64b22502f19
   - enabled: 1
@@ -14,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/02_Webcam_Test.unity
     guid: f2253128665db43448b1d95b35c17282
+  - enabled: 1
+    path: Assets/_Project/Scenes/03_Fish_Gallery.unity
+    guid: c60c2cd3143b3594bb9f1ba58c44076f
   m_configObjects:
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: cbc58ba752320c8479b53576b5d4f199, type: 2}
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 67c95709d3e631f4d978954b9e74e3f8, type: 2}
