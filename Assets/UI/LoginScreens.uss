@@ -1,0 +1,183 @@
+/* ══════════════════════════════════════════════════════
+   Kök kapsayıcı
+══════════════════════════════════════════════════════ */
+.screen-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    padding: 5%;
+    background-color: rgb(18, 24, 38);
+}
+
+/* ══════════════════════════════════════════════════════
+   Ekran grubu
+══════════════════════════════════════════════════════ */
+.screen {
+    width: 100%;
+    max-width: 720px;
+    flex-direction: column;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ══════════════════════════════════════════════════════
+   Başlık
+══════════════════════════════════════════════════════ */
+.title {
+    font-size: 70px;
+    -unity-font-style: bold;
+    color: rgb(240, 245, 255);
+    margin-bottom: 56px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+/* ══════════════════════════════════════════════════════
+   Birincil buton  (mavi CTA)
+══════════════════════════════════════════════════════ */
+.primary-btn {
+    min-height: 120px;
+    margin-top: 20px;
+    padding: 20px 40px;
+    border-radius: 20px;
+    border-width: 0;
+    background-color: rgb(56, 132, 255);
+    color: white;
+    font-size: 40px;
+    -unity-font-style: bold;
+}
+
+.primary-btn:hover  { background-color: rgb(76, 150, 255); }
+.primary-btn:active { background-color: rgb(36, 110, 230); }
+
+/* ══════════════════════════════════════════════════════
+   İkincil buton  (kenarlıklı koyu)
+══════════════════════════════════════════════════════ */
+.secondary-btn {
+    min-height: 120px;
+    margin-top: 20px;
+    padding: 20px 40px;
+    border-radius: 20px;
+    border-width: 2px;
+    border-color: rgb(70, 90, 130);
+    background-color: rgb(26, 35, 52);
+    color: rgb(210, 225, 245);
+    font-size: 40px;
+}
+
+.secondary-btn:hover { background-color: rgb(34, 46, 68); }
+
+/* Misafir varyantı — mavi kenarlık */
+.guest-btn {
+    border-color: rgb(56, 132, 255);
+    background-color: rgb(24, 44, 76);
+    color: white;
+}
+
+.guest-btn:hover { background-color: rgb(30, 54, 92); }
+
+/* ══════════════════════════════════════════════════════
+   Link / Geri butonu
+══════════════════════════════════════════════════════ */
+.link-btn {
+    min-height: 100px;
+    margin-top: 28px;
+    padding: 16px 32px;
+    border-radius: 16px;
+    border-width: 0;
+    background-color: transparent;
+    color: rgb(130, 160, 210);
+    font-size: 34px;
+}
+
+.link-btn:hover { color: rgb(180, 205, 245); }
+
+/* ══════════════════════════════════════════════════════
+   Geri bildirim etiketi
+══════════════════════════════════════════════════════ */
+.feedback {
+    min-height: 52px;
+    margin-top: 24px;
+    font-size: 30px;
+    color: rgb(255, 185, 70);
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+/* ══════════════════════════════════════════════════════
+   Seçilen sınıf etiketi (PIN ekranı)
+══════════════════════════════════════════════════════ */
+.selected-class {
+    font-size: 40px;
+    -unity-font-style: bold;
+    color: rgb(100, 200, 255);
+    margin-bottom: 32px;
+    -unity-text-align: middle-center;
+}
+
+/* ══════════════════════════════════════════════════════
+   Sınıf listesi ScrollView
+══════════════════════════════════════════════════════ */
+.class-scroll {
+    max-height: 900px;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+/* ══════════════════════════════════════════════════════
+   Dinamik sınıf butonu  (.class-item-btn)
+══════════════════════════════════════════════════════ */
+.class-item-btn {
+    min-height: 120px;
+    margin-bottom: 20px;
+    padding: 20px 36px;
+    border-radius: 20px;
+    border-width: 2px;
+    border-color: rgb(55, 75, 110);
+    background-color: rgb(30, 40, 58);
+    color: white;
+    font-size: 40px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+}
+
+.class-item-btn:hover  { background-color: rgb(40, 55, 80);  border-color: rgb(56, 132, 255); }
+.class-item-btn:active { background-color: rgb(24, 44, 76); }
+
+/* ══════════════════════════════════════════════════════
+   Form alanı (TextField sarmalayıcısı)
+══════════════════════════════════════════════════════ */
+.form-field {
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+
+/* Sunum etiketi ("Ad Soyad", "PIN" vb.) */
+.form-field > Label {
+    font-size: 28px;
+    color: rgb(160, 180, 215);
+    margin-bottom: 10px;
+}
+
+/* Gerçek metin girişi */
+.form-field > .unity-text-field__input {
+    min-height: 120px;
+    padding: 20px 28px;
+    font-size: 40px;
+    border-radius: 20px;
+    border-width: 2px;
+    border-color: rgb(55, 75, 110);
+    background-color: rgb(30, 41, 59);
+    color: white;
+}
+
+.form-field:focus > .unity-text-field__input {
+    border-color: rgb(56, 132, 255);
+    background-color: rgb(28, 44, 70);
+}

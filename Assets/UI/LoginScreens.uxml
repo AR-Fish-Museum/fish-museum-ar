@@ -1,0 +1,38 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="LoginScreens.uss" />
+    <ui:VisualElement name="root" class="screen-root">
+
+        <!-- ═══════════════════════════════════════════
+             Grup 1 · Ana Menü
+        ════════════════════════════════════════════ -->
+        <ui:VisualElement name="main-menu" class="screen">
+            <ui:Label text="AR Balık Müzesi" class="title" />
+            <ui:Button name="btn-join-group" text="Gruba Katıl"          class="primary-btn" />
+            <ui:Button name="btn-join-guest" text="Misafir Olarak Katıl" class="secondary-btn guest-btn" />
+        </ui:VisualElement>
+
+        <!-- ═══════════════════════════════════════════
+             Grup 2 · Sınıf Listesi
+        ════════════════════════════════════════════ -->
+        <ui:VisualElement name="class-selection" class="screen hidden">
+            <ui:Label text="Sınıfını Seç" class="title" />
+            <ui:ScrollView name="class-list-scroll" class="class-scroll" />
+            <ui:Label name="class-feedback" class="feedback" />
+            <ui:Button name="btn-back-to-menu" text="Geri Dön" class="link-btn" />
+        </ui:VisualElement>
+
+        <!-- ═══════════════════════════════════════════
+             Grup 3 · Öğrenci Girişi (PIN)
+        ════════════════════════════════════════════ -->
+        <ui:VisualElement name="pin-registration" class="screen hidden">
+            <ui:Label text="Öğrenci Girişi" class="title" />
+            <ui:Label name="selected-class-label" class="selected-class" />
+            <ui:TextField name="full-name-input" label="Ad Soyad" class="form-field" />
+            <ui:TextField name="pin-input" label="PIN" password="true" class="form-field" />
+            <ui:Button name="btn-confirm" text="Giriş Yap"         class="primary-btn" />
+            <ui:Label name="pin-feedback" class="feedback" />
+            <ui:Button name="btn-back-to-class" text="Başka Sınıf Seç" class="link-btn" />
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

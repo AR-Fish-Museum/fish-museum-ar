@@ -1,0 +1,328 @@
+/* ══════════════════════════════════════════════════════
+   Kök kapsayıcı
+══════════════════════════════════════════════════════ */
+.screen-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: rgb(18, 24, 38);
+}
+
+/* ══════════════════════════════════════════════════════
+   İçerik alanı
+══════════════════════════════════════════════════════ */
+.content-area {
+    flex-grow: 1;
+    align-items: stretch;
+    justify-content: flex-start;
+    flex-direction: column;
+    padding: 40px 40px 20px 40px;
+}
+
+.tab-title {
+    font-size: 60px;
+    -unity-font-style: bold;
+    color: rgb(200, 215, 235);
+    -unity-text-align: middle-center;
+    margin-bottom: 32px;
+}
+
+/* ══════════════════════════════════════════════════════
+   Canlılar listesi ScrollView
+══════════════════════════════════════════════════════ */
+.creatures-scroll {
+    flex-grow: 1;
+    width: 100%;
+}
+
+/* ══════════════════════════════════════════════════════
+   Canlı kartı
+══════════════════════════════════════════════════════ */
+.creature-card {
+    background-color: rgb(30, 40, 60);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    flex-direction: column;
+}
+
+.creature-name {
+    font-size: 45px;
+    -unity-font-style: bold;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.creature-desc {
+    font-size: 30px;
+    color: rgb(170, 185, 210);
+    white-space: normal;
+    margin-bottom: 24px;
+}
+
+.creature-ar-btn {
+    min-height: 100px;
+    margin-top: 8px;
+    padding: 16px 32px;
+    border-radius: 16px;
+    border-width: 2px;
+    border-color: rgb(0, 150, 255);
+    background-color: rgb(20, 50, 90);
+    color: white;
+    font-size: 34px;
+    -unity-font-style: bold;
+}
+
+.creature-ar-btn:hover  { background-color: rgb(26, 65, 115); }
+.creature-ar-btn:active { background-color: rgb(14, 38, 70);  }
+
+/* ══════════════════════════════════════════════════════
+   Alt navigasyon çubuğu
+══════════════════════════════════════════════════════ */
+.bottom-nav-bar {
+    height: 150px;
+    flex-direction: row;
+    align-items: stretch;
+    background-color: rgb(25, 33, 48);
+    border-top-width: 2px;
+    border-top-color: rgb(40, 50, 70);
+}
+
+/* ══════════════════════════════════════════════════════
+   Navigasyon butonu — varsayılan (pasif) durum
+══════════════════════════════════════════════════════ */
+.nav-btn {
+    flex-grow: 1;
+    height: 100%;
+    font-size: 35px;
+    background-color: transparent;
+    border-width: 0;
+    border-radius: 0;
+    color: rgb(150, 160, 180);
+    -unity-text-align: middle-center;
+    padding-bottom: 8px;
+    /* Alt kenarlık için yer ayır; pasif durumda transparan */
+    border-bottom-width: 5px;
+    border-bottom-color: rgba(0, 0, 0, 0);
+}
+
+.nav-btn:hover {
+    color: rgb(200, 210, 230);
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* ══════════════════════════════════════════════════════
+   Aktif sekme
+══════════════════════════════════════════════════════ */
+.nav-btn-active {
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    border-bottom-width: 5px;
+    border-bottom-color: rgb(0, 150, 255);
+}
+
+/* ══════════════════════════════════════════════════════
+   Canlı detay overlay — tüm ekranı örter, position absolute
+══════════════════════════════════════════════════════ */
+.creature-detail-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    background-color: rgb(12, 18, 30);
+}
+
+/* ── Üst bar ─────────────────────────────────────────── */
+.detail-top-bar {
+    flex-direction: row;
+    align-items: center;
+    height: 130px;
+    padding: 0 30px;
+    background-color: rgb(20, 28, 44);
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(40, 55, 80);
+}
+
+.detail-back-btn {
+    min-width: 160px;
+    height: 90px;
+    font-size: 34px;
+    background-color: transparent;
+    border-width: 0;
+    color: rgb(100, 160, 255);
+}
+
+.detail-back-btn:hover { color: white; }
+
+.detail-title {
+    flex-grow: 1;
+    font-size: 50px;
+    -unity-font-style: bold;
+    color: white;
+    -unity-text-align: middle-center;
+    margin-right: 160px;
+}
+
+/* ── Kaydırılabilir içerik (görsel + açıklama) ───────── */
+.detail-content-scroll {
+    flex-grow: 1;
+    padding: 40px;
+}
+
+.detail-creature-image {
+    height: 500px;
+    background-color: rgb(40, 50, 70);
+    border-radius: 30px;
+    margin-bottom: 40px;
+}
+
+.detail-desc {
+    font-size: 35px;
+    color: rgb(200, 210, 230);
+    white-space: normal;
+}
+
+/* ── Alt alan: AR + ağırlık + besle ─────────────────── */
+.detail-bottom-area {
+    height: 400px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 30px 40px 48px 40px;
+    background-color: rgb(25, 33, 48);
+    border-top-width: 2px;
+    border-top-color: rgb(50, 60, 80);
+}
+
+/* ── AR kamera placeholder ───────────────────────────── */
+.ar-placeholder {
+    height: 150px;
+    background-color: rgb(10, 15, 25);
+    border-radius: 20px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.ar-placeholder-text {
+    font-size: 28px;
+    color: rgb(100, 110, 130);
+}
+
+.detail-weight {
+    font-size: 38px;
+    color: rgb(160, 200, 240);
+    -unity-text-align: middle-center;
+}
+
+/* ── Besle butonu ────────────────────────────────────── */
+.btn-feed {
+    min-height: 140px;
+    border-radius: 24px;
+    border-width: 0;
+    background-color: rgb(22, 163, 74);
+    color: white;
+    font-size: 50px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.btn-feed:hover  { background-color: rgb(34, 197, 94); }
+.btn-feed:active { background-color: rgb(15, 120, 54); }
+
+/* ══════════════════════════════════════════════════════
+   Soru Overlay
+══════════════════════════════════════════════════════ */
+.question-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(10, 15, 25, 0.95);
+}
+
+/* Kart */
+.question-panel {
+    width: 92%;
+    max-width: 900px;
+    flex-direction: column;
+    background-color: rgb(22, 30, 48);
+    border-radius: 28px;
+    padding: 50px 44px 44px 44px;
+    border-width: 2px;
+    border-color: rgb(50, 65, 100);
+}
+
+/* Soru metni */
+.question-text {
+    font-size: 45px;
+    -unity-font-style: bold;
+    color: white;
+    white-space: normal;
+    margin-bottom: 50px;
+    -unity-text-align: upper-left;
+}
+
+/* Şıklar: flex-wrap ile 2x2 grid gibi çalışır */
+.options-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+}
+
+.option-btn {
+    width: 48%;
+    min-height: 120px;
+    margin: 1%;
+    padding: 16px 24px;
+    border-radius: 18px;
+    border-width: 2px;
+    border-color: rgb(55, 70, 105);
+    background-color: rgb(30, 40, 62);
+    color: rgb(220, 230, 250);
+    font-size: 36px;
+    -unity-text-align: middle-left;
+    white-space: normal;
+}
+
+.option-btn:hover  { background-color: rgb(42, 58, 90);  border-color: rgb(80, 110, 180); }
+.option-btn:active { background-color: rgb(22, 32, 54); }
+
+/* Doğru/Yanlış cevap renk varyantları */
+.option-correct { background-color: rgb(22, 101, 52);  border-color: rgb(34, 197, 94); color: white; }
+.option-wrong   { background-color: rgb(127, 29, 29);  border-color: rgb(239, 68, 68); color: white; }
+
+/* Geri bildirim */
+.question-feedback {
+    min-height: 56px;
+    font-size: 42px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 24px;
+}
+
+.feedback-correct { color: rgb(74, 222, 128);  }
+.feedback-wrong   { color: rgb(252, 100, 100); }
+
+/* Kapat / Devam Et */
+.btn-close-question {
+    min-height: 110px;
+    border-radius: 20px;
+    border-width: 0;
+    background-color: rgb(50, 65, 100);
+    color: white;
+    font-size: 40px;
+    -unity-font-style: bold;
+}
+
+.btn-close-question:hover  { background-color: rgb(65, 85, 130); }
+.btn-close-question:active { background-color: rgb(38, 50, 80);  }

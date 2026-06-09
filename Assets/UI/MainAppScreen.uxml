@@ -1,0 +1,73 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="MainAppScreen.uss" />
+    <ui:VisualElement name="root" class="screen-root">
+
+        <!-- ── İçerik Alanı ─────────────────────────────────── -->
+        <ui:VisualElement name="content-area" class="content-area">
+            <ui:Label name="current-tab-label" text="Canlılar" class="tab-title" />
+            <ui:ScrollView name="creatures-scroll-view" class="creatures-scroll" />
+        </ui:VisualElement>
+
+        <!-- ── Alt Navigasyon Çubuğu ────────────────────────── -->
+        <ui:VisualElement name="bottom-nav-bar" class="bottom-nav-bar">
+            <ui:Button name="btn-tab-creatures"   text="Canlılar" class="nav-btn" />
+            <ui:Button name="btn-tab-leaderboard" text="Sıralama" class="nav-btn" />
+            <ui:Button name="btn-tab-about"       text="Müze"     class="nav-btn" />
+        </ui:VisualElement>
+
+        <!-- ── Canlı Detay Overlay (başlangıçta gizli) ──────── -->
+        <ui:VisualElement name="creature-detail-overlay" class="creature-detail-overlay hidden">
+
+            <!-- Üst bar -->
+            <ui:VisualElement name="detail-top-bar" class="detail-top-bar">
+                <ui:Button name="btn-back-to-list" text="← Geri" class="detail-back-btn" />
+                <ui:Label name="detail-creature-name" text="Canlı Adı" class="detail-title" />
+            </ui:VisualElement>
+
+            <!-- Kaydırılabilir içerik: görsel + açıklama -->
+            <ui:ScrollView name="detail-content-scroll" class="detail-content-scroll">
+                <ui:VisualElement name="detail-creature-image" class="detail-creature-image" />
+                <ui:Label name="detail-creature-desc" text="Canlı açıklaması buraya gelecek..."
+                          class="detail-desc" />
+            </ui:ScrollView>
+
+            <!-- Alt alan: AR placeholder, ağırlık, besleme butonu -->
+            <ui:VisualElement name="detail-bottom-area" class="detail-bottom-area">
+                <ui:VisualElement name="ar-camera-placeholder" class="ar-placeholder">
+                    <ui:Label text="[ AR Kamera Görüntüsü ]" class="ar-placeholder-text" />
+                </ui:VisualElement>
+                <ui:Label name="detail-creature-weight" text="Ağırlık: 0 kg" class="detail-weight" />
+                <ui:Button name="btn-feed-creature" text="🐟 Besle" class="btn-feed" />
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+
+        <!-- ── Soru Overlay (başlangıçta gizli) ─────────────── -->
+        <ui:VisualElement name="question-overlay" class="question-overlay hidden">
+
+            <ui:VisualElement class="question-panel">
+
+                <!-- Soru metni -->
+                <ui:Label name="question-text" text="Soru buraya gelecek..."
+                          class="question-text" />
+
+                <!-- 4 şık: 2x2 grid -->
+                <ui:VisualElement name="options-container" class="options-container">
+                    <ui:Button name="btn-opt-a" text="A) ..." class="option-btn" />
+                    <ui:Button name="btn-opt-b" text="B) ..." class="option-btn" />
+                    <ui:Button name="btn-opt-c" text="C) ..." class="option-btn" />
+                    <ui:Button name="btn-opt-d" text="D) ..." class="option-btn" />
+                </ui:VisualElement>
+
+                <!-- Geri bildirim alanı -->
+                <ui:Label name="question-feedback" text="" class="question-feedback" />
+
+                <!-- Kapat / Devam Et butonu -->
+                <ui:Button name="btn-close-question" text="Kapat" class="btn-close-question" />
+
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>
