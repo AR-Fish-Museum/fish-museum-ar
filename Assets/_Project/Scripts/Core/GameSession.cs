@@ -13,6 +13,13 @@ public class GameSession : MonoBehaviour
     [field: SerializeField] public string ClassName    { get; private set; }
     [field: SerializeField] public int    Score       { get; private set; }
 
+    // ── Quiz istatistikleri ───────────────────────────────────────
+    [Header("Quiz Durumu")]
+    [field: SerializeField] public string UserId                { get; private set; }
+    [field: SerializeField] public int    CorrectCount          { get; private set; }
+    [field: SerializeField] public int    WrongCount            { get; private set; }
+    [field: SerializeField] public int    AnsweredQuestionCount { get; private set; }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -33,6 +40,11 @@ public class GameSession : MonoBehaviour
         ClassId     = string.Empty;
         ClassName   = string.Empty;
         Score       = 0;
+
+        UserId                = string.Empty;
+        CorrectCount          = 0;
+        WrongCount            = 0;
+        AnsweredQuestionCount = 0;
     }
 
     public void SetClassSession(string studentName, string classId, string className)
@@ -42,12 +54,39 @@ public class GameSession : MonoBehaviour
         ClassId     = classId;
         ClassName   = className;
         Score       = 0;
+
+        UserId                = string.Empty;
+        CorrectCount          = 0;
+        WrongCount            = 0;
+        AnsweredQuestionCount = 0;
+    }
+
+    // ── Kullanıcı kimliği ─────────────────────────────────────────
+    public void SetUserId(string userId)
+    {
+        UserId = userId;
     }
 
     // ── Puanlama ──────────────────────────────────────────────────
     public void AddScore(int amount)
     {
         Score += amount;
+    }
+
+    // ── Cevap kaydı ───────────────────────────────────────────────
+    public void RegisterAnswer(bool isCorrect)
+    {
+        AnsweredQuestionCount++;
+
+        if (isCorrect)
+        {
+            CorrectCount++;
+            AddScore(10);
+        }
+        else
+        {
+            WrongCount++;
+        }
     }
 
     // ── Sıfırlama ─────────────────────────────────────────────────
@@ -58,5 +97,10 @@ public class GameSession : MonoBehaviour
         ClassId     = string.Empty;
         ClassName   = string.Empty;
         Score       = 0;
+
+        UserId                = string.Empty;
+        CorrectCount          = 0;
+        WrongCount            = 0;
+        AnsweredQuestionCount = 0;
     }
 }

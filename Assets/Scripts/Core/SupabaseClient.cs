@@ -104,6 +104,7 @@ namespace FishMuseum.Core
             };
             request.SetRequestHeader("Content-Type", "application/json");
             AddAuthHeaders(request);
+            request.SetRequestHeader("Prefer", "return=representation");
 
             try
             {

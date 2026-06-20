@@ -12,6 +12,10 @@
     background-color: rgb(18, 24, 38);
 }
 
+.hidden {
+    display: none;
+}
+
 /* ══════════════════════════════════════════════════════
    İçerik alanı
 ══════════════════════════════════════════════════════ */
@@ -237,7 +241,7 @@
 .btn-feed:active { background-color: rgb(15, 120, 54); }
 
 /* ══════════════════════════════════════════════════════
-   Soru Overlay
+   Soru Overlay — deniz altı temalı cam panel
 ══════════════════════════════════════════════════════ */
 .question-overlay {
     position: absolute;
@@ -247,28 +251,42 @@
     height: 100%;
     align-items: center;
     justify-content: center;
-    background-color: rgba(10, 15, 25, 0.95);
+    background-color: rgb(6, 18, 30);
 }
 
-/* Kart */
+/* Cam panel — koyu lacivert / turkuaz */
 .question-panel {
     width: 92%;
     max-width: 900px;
     flex-direction: column;
-    background-color: rgb(22, 30, 48);
-    border-radius: 28px;
+    background-color: rgba(16, 40, 58, 0.96);
+    border-radius: 36px;
     padding: 50px 44px 44px 44px;
     border-width: 2px;
-    border-color: rgb(50, 65, 100);
+    border-color: rgba(95, 215, 235, 0.55);
 }
 
-/* Soru metni */
-.question-text {
-    font-size: 45px;
+/* Üst durum şeridi — şık, hafif cam kapsül */
+.quiz-status-label {
+    font-size: 30px;
     -unity-font-style: bold;
-    color: white;
+    color: rgb(125, 230, 245);
+    -unity-text-align: middle-center;
+    background-color: rgba(20, 70, 90, 0.55);
+    border-radius: 16px;
+    border-width: 1px;
+    border-color: rgba(110, 220, 235, 0.35);
+    padding: 12px 20px;
+    margin-bottom: 28px;
+}
+
+/* Soru metni — büyük, okunaklı, beyaz */
+.question-text {
+    font-size: 46px;
+    -unity-font-style: bold;
+    color: rgb(240, 250, 255);
     white-space: normal;
-    margin-bottom: 50px;
+    margin-bottom: 46px;
     -unity-text-align: upper-left;
 }
 
@@ -279,27 +297,28 @@
     margin-bottom: 32px;
 }
 
+/* Cevap butonu — açık mavi / cam hissi */
 .option-btn {
     width: 48%;
     min-height: 120px;
     margin: 1%;
     padding: 16px 24px;
-    border-radius: 18px;
+    border-radius: 22px;
     border-width: 2px;
-    border-color: rgb(55, 70, 105);
-    background-color: rgb(30, 40, 62);
-    color: rgb(220, 230, 250);
+    border-color: rgba(120, 210, 235, 0.45);
+    background-color: rgba(34, 86, 116, 0.85);
+    color: rgb(228, 244, 252);
     font-size: 36px;
     -unity-text-align: middle-left;
     white-space: normal;
 }
 
-.option-btn:hover  { background-color: rgb(42, 58, 90);  border-color: rgb(80, 110, 180); }
-.option-btn:active { background-color: rgb(22, 32, 54); }
+.option-btn:hover  { background-color: rgba(46, 110, 145, 0.95); border-color: rgb(130, 230, 250); }
+.option-btn:active { background-color: rgba(26, 70, 96, 0.95); }
 
 /* Doğru/Yanlış cevap renk varyantları */
-.option-correct { background-color: rgb(22, 101, 52);  border-color: rgb(34, 197, 94); color: white; }
-.option-wrong   { background-color: rgb(127, 29, 29);  border-color: rgb(239, 68, 68); color: white; }
+.option-correct { background-color: rgb(22, 130, 80);  border-color: rgb(70, 240, 160);  color: white; }
+.option-wrong   { background-color: rgb(150, 40, 60);  border-color: rgb(255, 120, 140); color: white; }
 
 /* Geri bildirim */
 .question-feedback {
@@ -308,21 +327,168 @@
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     margin-bottom: 24px;
+    white-space: normal;
 }
 
-.feedback-correct { color: rgb(74, 222, 128);  }
-.feedback-wrong   { color: rgb(252, 100, 100); }
+.feedback-correct { color: rgb(90, 245, 170);  }
+.feedback-wrong   { color: rgb(255, 120, 150); }
 
-/* Kapat / Devam Et */
+/* Devam Et / Kapat — belirgin turkuaz-mavi ana buton */
 .btn-close-question {
-    min-height: 110px;
-    border-radius: 20px;
-    border-width: 0;
-    background-color: rgb(50, 65, 100);
+    min-height: 120px;
+    border-radius: 26px;
+    border-width: 2px;
+    border-color: rgba(150, 240, 255, 0.5);
+    background-color: rgb(20, 150, 185);
     color: white;
-    font-size: 40px;
+    font-size: 42px;
     -unity-font-style: bold;
 }
 
-.btn-close-question:hover  { background-color: rgb(65, 85, 130); }
-.btn-close-question:active { background-color: rgb(38, 50, 80);  }
+.btn-close-question:hover  { background-color: rgb(30, 180, 215); }
+.btn-close-question:active { background-color: rgb(15, 120, 150); }
+
+.quiz-result-card {
+    width: 92%;
+    max-width: 920px;
+    align-self: center;
+    margin-top: 55px;
+    padding: 68px;
+    border-radius: 44px;
+
+    background-color: rgba(6, 35, 65, 0.92);
+    border-width: 3px;
+    border-color: rgba(110, 230, 255, 0.65);
+
+    -unity-text-align: middle-center;
+}
+
+.quiz-result-title {
+    font-size: 62px;
+    -unity-font-style: bold;
+    color: rgb(245, 255, 255);
+    -unity-text-align: middle-center;
+    margin-bottom: 18px;
+}
+
+.quiz-result-subtitle {
+    font-size: 33px;
+    color: rgb(170, 230, 255);
+    -unity-text-align: middle-center;
+    margin-bottom: 38px;
+}
+
+.quiz-result-score {
+    font-size: 50px;
+    -unity-font-style: bold;
+    color: rgb(120, 255, 210);
+    -unity-text-align: middle-center;
+    margin-bottom: 34px;
+}
+
+.quiz-result-stat {
+    font-size: 34px;
+    color: rgb(235, 250, 255);
+    -unity-text-align: middle-center;
+    margin-bottom: 16px;
+}
+
+.quiz-result-restart-btn {
+    margin-top: 40px;
+    height: 86px;
+    border-radius: 28px;
+    font-size: 32px;
+    -unity-font-style: bold;
+
+    color: white;
+    background-color: rgb(0, 160, 220);
+    border-width: 3px;
+    border-color: rgba(160, 245, 255, 0.85);
+}
+
+/* ══════════════════════════════════════════════════════
+   Sıralama (Leaderboard)
+══════════════════════════════════════════════════════ */
+.quiz-result-leaderboard-btn {
+    margin-top: 20px;
+    height: 82px;
+    border-radius: 28px;
+    font-size: 30px;
+    -unity-font-style: bold;
+    color: white;
+    background-color: rgb(20, 115, 185);
+    border-width: 3px;
+    border-color: rgba(160, 245, 255, 0.85);
+}
+
+.leaderboard-card {
+    width: 92%;
+    max-width: 920px;
+    align-self: center;
+    margin-top: 60px;
+    padding: 52px;
+    border-radius: 42px;
+    background-color: rgba(6, 35, 65, 0.92);
+    border-width: 3px;
+    border-color: rgba(110, 230, 255, 0.65);
+}
+
+.leaderboard-title {
+    font-size: 56px;
+    -unity-font-style: bold;
+    color: rgb(245, 255, 255);
+    -unity-text-align: middle-center;
+    margin-bottom: 36px;
+}
+
+.leaderboard-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 70px;
+    margin-bottom: 14px;
+    padding-left: 24px;
+    padding-right: 24px;
+    border-radius: 22px;
+    background-color: rgba(20, 95, 130, 0.65);
+    border-width: 2px;
+    border-color: rgba(130, 230, 255, 0.35);
+}
+
+.leaderboard-rank {
+    width: 70px;
+    font-size: 30px;
+    -unity-font-style: bold;
+    color: rgb(120, 255, 210);
+}
+
+.leaderboard-name {
+    flex-grow: 1;
+    font-size: 28px;
+    color: white;
+}
+
+.leaderboard-score {
+    font-size: 28px;
+    -unity-font-style: bold;
+    color: rgb(120, 220, 255);
+}
+
+.leaderboard-empty {
+    font-size: 28px;
+    color: rgb(180, 230, 255);
+    -unity-text-align: middle-center;
+    margin-bottom: 30px;
+}
+
+.leaderboard-back-btn {
+    margin-top: 34px;
+    height: 78px;
+    border-radius: 28px;
+    font-size: 28px;
+    -unity-font-style: bold;
+    color: white;
+    background-color: rgb(0, 150, 210);
+    border-width: 3px;
+    border-color: rgba(160, 245, 255, 0.85);
+}

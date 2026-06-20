@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FishMuseum.Core;
 using FishMuseum.Data;
@@ -42,11 +43,16 @@ namespace FishMuseum.UI
         private Button        _btnOptC;
         private Button        _btnOptD;
         private Button        _btnCloseQuestion;
+        private Label         _quizStatusLabel;
 
         // ── Durum ─────────────────────────────────────────────────
         private string       _currentSelectedCreatureId;
         private QuestionData _currentQuestion;
         private bool         _initialized;
+
+        // ── Sınıf soruları (quiz akışı) ───────────────────────────
+        private List<QuestionData> _classQuestions;
+        private int                _currentQuestionIndex;
 
         // ══════════════════════════════════════════════════════════
         //  Start — UIDocument.Awake() bittikten sonra çalışır
@@ -70,19 +76,19 @@ namespace FishMuseum.UI
             }
 
             // ── Referanslar ───────────────────────────────────────
-            _currentTabLabel = Require<Label>(root, "current-tab-label");
+            _currentTabLabel = root.Q<Label>("current-tab-label");
             _creaturesScroll = Require<ScrollView>(root, "creatures-scroll-view");
 
-            _btnCreatures   = Require<Button>(root, "btn-tab-creatures");
-            _btnLeaderboard = Require<Button>(root, "btn-tab-leaderboard");
-            _btnAbout       = Require<Button>(root, "btn-tab-about");
+            _btnCreatures   = root.Q<Button>("btn-tab-creatures");
+            _btnLeaderboard = root.Q<Button>("btn-tab-leaderboard");
+            _btnAbout       = root.Q<Button>("btn-tab-about");
 
-            _detailOverlay        = Require<VisualElement>(root, "creature-detail-overlay");
-            _detailCreatureName   = Require<Label>(root, "detail-creature-name");
-            _detailCreatureDesc   = Require<Label>(root, "detail-creature-desc");
-            _detailCreatureWeight = Require<Label>(root, "detail-creature-weight");
-            _btnBackToList        = Require<Button>(root, "btn-back-to-list");
-            _btnFeedCreature      = Require<Button>(root, "btn-feed-creature");
+            _detailOverlay        = root.Q<VisualElement>("creature-detail-overlay");
+            _detailCreatureName   = root.Q<Label>("detail-creature-name");
+            _detailCreatureDesc   = root.Q<Label>("detail-creature-desc");
+            _detailCreatureWeight = root.Q<Label>("detail-creature-weight");
+            _btnBackToList        = root.Q<Button>("btn-back-to-list");
+            _btnFeedCreature      = root.Q<Button>("btn-feed-creature");
 
             _questionOverlay   = Require<VisualElement>(root, "question-overlay");
             _questionText      = Require<Label>(root, "question-text");
@@ -93,6 +99,8 @@ namespace FishMuseum.UI
             _btnOptD           = Require<Button>(root, "btn-opt-d");
             _btnCloseQuestion  = Require<Button>(root, "btn-close-question");
 
+            _quizStatusLabel = root.Q<Label>("QuizStatusLabel");
+
             // ── Event bağlantıları (bir kez bağlanır) ─────────────
             if (_btnCreatures   != null) _btnCreatures.clicked   += () => SwitchTab(TAB_CREATURES);
             if (_btnLeaderboard != null) _btnLeaderboard.clicked += () => SwitchTab(TAB_LEADERBOARD);
@@ -100,14 +108,14 @@ namespace FishMuseum.UI
 
             if (_btnBackToList    != null) _btnBackToList.clicked    += HideCreatureDetail;
             if (_btnFeedCreature  != null) _btnFeedCreature.clicked  += () => _ = OnFeedCreature();
-            if (_btnCloseQuestion != null) _btnCloseQuestion.clicked += HideQuestionOverlay;
+            if (_btnCloseQuestion != null) _btnCloseQuestion.clicked += OnQuestionContinueClicked;
 
             _initialized = true;
             Debug.Log("[MainAppScreenController] Start tamamlandı — referanslar ve eventler hazır.");
 
             // İlk ekrana git
             ResetToInitialState();
-            _ = LoadCreaturesAsync();
+            _ = LoadClassQuestionsAsync();
         }
 
         // ══════════════════════════════════════════════════════════
@@ -121,9 +129,9 @@ namespace FishMuseum.UI
             // Start henüz çalışmadıysa _initialized false olur; o zaman Start halleder
             if (!_initialized) return;
 
-            // Yeniden açılınca temiz duruma getir ve listeyi tazele
+            // Yeniden açılınca temiz duruma getir ve soruları tazele
             ResetToInitialState();
-            _ = LoadCreaturesAsync();
+            _ = LoadClassQuestionsAsync();
         }
 
         // ══════════════════════════════════════════════════════════
@@ -259,6 +267,98 @@ namespace FishMuseum.UI
                 if (creature == null) continue;
                 _creaturesScroll.Add(BuildCreatureCard(creature));
             }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Supabase — sınıf sorularını yükle (öğrenci quiz akışı)
+        // ══════════════════════════════════════════════════════════
+
+        private async Task LoadClassQuestionsAsync()
+        {
+            Debug.Log("[MainAppScreenController] Sınıf soruları yükleniyor...");
+
+            if (_creaturesScroll == null)
+            {
+                Debug.LogError("[MainAppScreenController] _creaturesScroll null.");
+                return;
+            }
+
+            if (GameSession.Instance == null)
+            {
+                Debug.LogError("[MainAppScreenController] GameSession.Instance null — " +
+                               "Sınıf soruları yüklenemedi.");
+                return;
+            }
+
+            string classId = GameSession.Instance.ClassId;
+            if (string.IsNullOrEmpty(classId))
+            {
+                Debug.LogError("[MainAppScreenController] GameSession.ClassId boş — " +
+                               "Öğrenci sınıf oturumu kurulmamış olabilir.");
+                return;
+            }
+
+            if (SupabaseClient.Instance == null)
+            {
+                Debug.LogError("[MainAppScreenController] SupabaseClient.Instance null.");
+                return;
+            }
+
+            string endpoint =
+                $"questions?class_id=eq.{classId}&is_active=eq.true&order=created_at.asc";
+
+            Debug.Log("[MainAppScreenController] Soru endpoint: " + endpoint);
+
+            string json;
+            try
+            {
+                json = await SupabaseClient.Instance.GetAsync(endpoint);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[MainAppScreenController] Soru API hatası: " + e.Message);
+                return;
+            }
+
+            if (json == null)
+            {
+                Debug.LogError("[MainAppScreenController] Sorular API null döndü.");
+                return;
+            }
+
+            QuestionDataList result;
+            try
+            {
+                result = QuestionDataList.FromJson(json);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[MainAppScreenController] Soru parse hatası: " + e.Message);
+                return;
+            }
+
+            Debug.Log($"[MainAppScreenController] {result?.items?.Count ?? 0} soru yüklendi.");
+
+            // ── Soru yoksa bilgi mesajı göster ────────────────────
+            if (result?.items == null || result.items.Count == 0)
+            {
+                _creaturesScroll.Clear();
+                var empty = new Label { text = "Bu sınıf için henüz soru bulunamadı." };
+                empty.AddToClassList("creature-desc");
+                _creaturesScroll.Add(empty);
+                return;
+            }
+
+            // ── Sorular var → quiz akışını başlat ─────────────────
+            _classQuestions       = result.items;
+            _currentQuestionIndex = 0;
+
+            if (_currentTabLabel != null) _currentTabLabel.text = "Quiz";
+
+            _creaturesScroll.Clear();
+            _detailOverlay?.AddToClassList(CSS_HIDDEN);
+
+            ShowQuestionOverlay(_classQuestions[0]);
         }
 
         // ══════════════════════════════════════════════════════════
@@ -400,10 +500,10 @@ namespace FishMuseum.UI
                 _questionText.text = question.question_text ?? "Soru yüklenemedi.";
 
             // Her soru açılışında şıkları temizleyip yeniden doldur
-            SetOptionButton(_btnOptA, "a", question.option_a);
-            SetOptionButton(_btnOptB, "b", question.option_b);
-            SetOptionButton(_btnOptC, "c", question.option_c);
-            SetOptionButton(_btnOptD, "d", question.option_d);
+            SetOptionButton(_btnOptA, "a", question.GetOptionA());
+            SetOptionButton(_btnOptB, "b", question.GetOptionB());
+            SetOptionButton(_btnOptC, "c", question.GetOptionC());
+            SetOptionButton(_btnOptD, "d", question.GetOptionD());
 
             if (_questionFeedback != null)
             {
@@ -412,10 +512,27 @@ namespace FishMuseum.UI
                 _questionFeedback.RemoveFromClassList("feedback-wrong");
             }
 
-            if (_btnCloseQuestion != null) _btnCloseQuestion.text = "Kapat";
+            if (_btnCloseQuestion != null)
+            {
+                _btnCloseQuestion.text = "Devam Et";
+                _btnCloseQuestion.style.display = DisplayStyle.None;
+            }
 
             _questionOverlay.RemoveFromClassList(CSS_HIDDEN);
+            UpdateQuizStatusLabel();
             Debug.Log($"[MainAppScreenController] Soru gösteriliyor: {question.question_text}");
+        }
+
+        private void UpdateQuizStatusLabel()
+        {
+            if (_quizStatusLabel == null) return;
+
+            int x = _currentQuestionIndex + 1;
+            int y = _classQuestions != null ? _classQuestions.Count : 0;
+            int z = GameSession.Instance != null ? GameSession.Instance.Score : 0;
+
+            _quizStatusLabel.style.display = DisplayStyle.Flex;
+            _quizStatusLabel.text = $"Soru {x} / {y}  •  Puan: {z}";
         }
 
         /// <summary>
@@ -450,7 +567,7 @@ namespace FishMuseum.UI
         private void OnOptionCClicked() => CheckAnswer("c");
         private void OnOptionDClicked() => CheckAnswer("d");
 
-        private void CheckAnswer(string chosen)
+        private async void CheckAnswer(string chosen)
         {
             if (_currentQuestion == null) return;
 
@@ -463,6 +580,45 @@ namespace FishMuseum.UI
             MarkOption(_btnOptC, "c", chosen, correct);
             MarkOption(_btnOptD, "d", chosen, correct);
 
+            // Cevabı GameSession quiz sayaçlarına/puanına kaydet
+            if (GameSession.Instance != null)
+            {
+                GameSession.Instance.RegisterAnswer(isRight);
+            }
+
+            try
+            {
+                if (SupabaseClient.Instance != null &&
+                    GameSession.Instance != null &&
+                    !string.IsNullOrEmpty(GameSession.Instance.UserId) &&
+                    _currentQuestion != null)
+                {
+                    var answerPayload = new AnswerPayload
+                    {
+                        question_id = _currentQuestion.id,
+                        user_id = GameSession.Instance.UserId,
+                        is_correct = isRight,
+                        chosen_option = chosen
+                    };
+
+                    string answerJson = JsonUtility.ToJson(answerPayload);
+
+                    await SupabaseClient.Instance.PostAsync("analytics_answers", answerJson);
+
+                    Debug.Log("[MainAppScreenController] Cevap Supabase analytics_answers tablosuna kaydedildi.");
+                }
+                else
+                {
+                    Debug.LogWarning("[MainAppScreenController] Cevap Supabase'e kaydedilemedi. SupabaseClient, UserId veya CurrentQuestion eksik.");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[MainAppScreenController] Cevap kaydı sırasında hata: " + e.Message);
+            }
+
+            UpdateQuizStatusLabel();
+
             if (_questionFeedback != null)
             {
                 _questionFeedback.RemoveFromClassList("feedback-correct");
@@ -470,19 +626,25 @@ namespace FishMuseum.UI
 
                 if (isRight)
                 {
-                    _questionFeedback.text = "Doğru! 🎉";
+                    _questionFeedback.text = "Doğru! 🎉 +10 Puan";
                     _questionFeedback.AddToClassList("feedback-correct");
                 }
                 else
                 {
-                    _questionFeedback.text = "Yanlış! 😢";
+                    _questionFeedback.text = $"Yanlış! Doğru cevap: {correct.ToUpper()}";
                     _questionFeedback.AddToClassList("feedback-wrong");
                 }
             }
 
-            if (_btnCloseQuestion != null) _btnCloseQuestion.text = "Devam Et";
+            if (_btnCloseQuestion != null)
+            {
+                _btnCloseQuestion.text = "Devam Et";
+                _btnCloseQuestion.style.display = DisplayStyle.Flex;
+            }
 
-            Debug.Log($"[MainAppScreenController] Seçilen: {chosen} | Doğru: {correct} | {(isRight ? "✓ Doğru" : "✗ Yanlış")}");
+            int totalScore = GameSession.Instance != null ? GameSession.Instance.Score : 0;
+            Debug.Log($"[MainAppScreenController] Seçilen: {chosen} | Doğru: {correct} | " +
+                      $"{(isRight ? "✓ Doğru" : "✗ Yanlış")} | Score: {totalScore}");
         }
 
         private void MarkOption(Button btn, string key, string chosen, string correct)
@@ -502,6 +664,256 @@ namespace FishMuseum.UI
         }
 
         // ══════════════════════════════════════════════════════════
+        //  Devam Et — quiz akışında sonraki soruya geç
+        // ══════════════════════════════════════════════════════════
+
+        private void OnQuestionContinueClicked()
+        {
+            // Quiz modunda mıyız?
+            if (_classQuestions != null && _classQuestions.Count > 0)
+            {
+                _currentQuestionIndex++;
+
+                if (_currentQuestionIndex < _classQuestions.Count)
+                {
+                    ShowQuestionOverlay(_classQuestions[_currentQuestionIndex]);
+                    return;
+                }
+
+                // Soru kalmadı → quiz tamamlandı sonucunu göster
+                ShowQuizResult();
+                return;
+            }
+
+            // Quiz modu değil → eski davranış
+            HideQuestionOverlay();
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Quiz sonucu kartı
+        // ══════════════════════════════════════════════════════════
+
+        private void ShowQuizResult()
+        {
+            // Soru ve detay panellerini kesin kapat
+            if (_questionOverlay != null)
+            {
+                _questionOverlay.style.display = DisplayStyle.None;
+            }
+
+            if (_detailOverlay != null)
+            {
+                _detailOverlay.style.display = DisplayStyle.None;
+            }
+
+            if (_currentQuestion != null)
+            {
+                _currentQuestion = null;
+            }
+
+            if (_currentTabLabel != null) _currentTabLabel.text = "Quiz Tamamlandı";
+
+            // Sonuç listesini görünür yap ve temizle
+            if (_creaturesScroll != null)
+            {
+                _creaturesScroll.style.display = DisplayStyle.Flex;
+                _creaturesScroll.Clear();
+            }
+
+            int score    = GameSession.Instance != null ? GameSession.Instance.Score                 : 0;
+            int correct  = GameSession.Instance != null ? GameSession.Instance.CorrectCount          : 0;
+            int wrong    = GameSession.Instance != null ? GameSession.Instance.WrongCount            : 0;
+            int answered = GameSession.Instance != null ? GameSession.Instance.AnsweredQuestionCount : 0;
+            int total    = _classQuestions != null ? _classQuestions.Count : 0;
+
+            var card = new VisualElement();
+            card.AddToClassList("quiz-result-card");
+
+            var title = new Label { text = "Quiz Tamamlandı 🎉" };
+            title.AddToClassList("quiz-result-title");
+
+            var subtitle = new Label { text = "Tebrikler, tüm soruları tamamladın." };
+            subtitle.AddToClassList("quiz-result-subtitle");
+
+            var scoreLabel = new Label { text = $"Toplam Puan: {score}" };
+            scoreLabel.AddToClassList("quiz-result-score");
+
+            var correctLabel = new Label { text = $"Doğru Sayısı: {correct}" };
+            correctLabel.AddToClassList("quiz-result-stat");
+
+            var wrongLabel = new Label { text = $"Yanlış Sayısı: {wrong}" };
+            wrongLabel.AddToClassList("quiz-result-stat");
+
+            var answeredLabel = new Label { text = $"Cevaplanan Soru: {answered} / {total}" };
+            answeredLabel.AddToClassList("quiz-result-stat");
+
+            card.Add(title);
+            card.Add(subtitle);
+            card.Add(scoreLabel);
+            card.Add(correctLabel);
+            card.Add(wrongLabel);
+            card.Add(answeredLabel);
+
+            // Baştan başla — sadece soruları yeniden başlatır (puan sıfırlanmaz)
+            var restartBtn = new Button { text = "Quiz'e Baştan Başla" };
+            restartBtn.AddToClassList("quiz-result-restart-btn");
+            restartBtn.clicked += () =>
+            {
+                if (_classQuestions == null || _classQuestions.Count == 0) return;
+
+                _currentQuestionIndex = 0;
+
+                if (_creaturesScroll != null)
+                {
+                    _creaturesScroll.Clear();
+                    _creaturesScroll.style.display = DisplayStyle.None;
+                }
+
+                if (_questionOverlay != null)
+                {
+                    _questionOverlay.style.display = DisplayStyle.Flex;
+                }
+
+                ShowQuestionOverlay(_classQuestions[0]);
+            };
+            card.Add(restartBtn);
+
+            // Sıralamayı Gör — aynı sınıftaki öğrenci sıralaması
+            var leaderboardBtn = new Button { text = "Sıralamayı Gör" };
+            leaderboardBtn.AddToClassList("quiz-result-leaderboard-btn");
+            leaderboardBtn.clicked += () => _ = LoadLeaderboardAsync();
+            card.Add(leaderboardBtn);
+
+            _creaturesScroll?.Add(card);
+
+            Debug.Log($"[MainAppScreenController] Quiz tamamlandı — Puan: {score}, " +
+                      $"Doğru: {correct}, Yanlış: {wrong}, Cevaplanan: {answered}/{total}");
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Sıralama — aynı sınıftaki öğrencileri total_score'a göre listele
+        // ══════════════════════════════════════════════════════════
+
+        private async Task LoadLeaderboardAsync()
+        {
+            if (GameSession.Instance == null)
+            {
+                Debug.LogError("[MainAppScreenController] GameSession.Instance null — sıralama yüklenemedi.");
+                return;
+            }
+
+            string classId = GameSession.Instance.ClassId;
+            if (string.IsNullOrEmpty(classId))
+            {
+                Debug.LogError("[MainAppScreenController] GameSession.ClassId boş — sıralama yüklenemedi.");
+                return;
+            }
+
+            if (SupabaseClient.Instance == null)
+            {
+                Debug.LogError("[MainAppScreenController] SupabaseClient.Instance null — sıralama yüklenemedi.");
+                return;
+            }
+
+            string endpoint =
+                $"users?class_id=eq.{classId}&role=eq.student&is_banned=eq.false&order=total_score.desc";
+
+            string json;
+            try
+            {
+                json = await SupabaseClient.Instance.GetAsync(endpoint);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[MainAppScreenController] Sıralama API hatası: " + e.Message);
+                return;
+            }
+
+            if (json == null)
+            {
+                Debug.LogError("[MainAppScreenController] Sıralama API null döndü.");
+                return;
+            }
+
+            UserDataList result;
+            try
+            {
+                result = UserDataList.FromJson(json);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[MainAppScreenController] Sıralama parse hatası: " + e.Message);
+                return;
+            }
+
+            // Ekran durumunu sıralama için hazırla
+            if (_questionOverlay != null) _questionOverlay.style.display = DisplayStyle.None;
+
+            if (_creaturesScroll == null)
+            {
+                Debug.LogError("[MainAppScreenController] _creaturesScroll null — sıralama gösterilemedi.");
+                return;
+            }
+
+            _creaturesScroll.style.display = DisplayStyle.Flex;
+            _creaturesScroll.Clear();
+
+            if (_currentTabLabel != null) _currentTabLabel.text = "Sıralama";
+
+            var card = new VisualElement();
+            card.AddToClassList("leaderboard-card");
+
+            var title = new Label { text = "Sınıf Sıralaması 🏆" };
+            title.AddToClassList("leaderboard-title");
+            card.Add(title);
+
+            if (result?.items == null || result.items.Count == 0)
+            {
+                var empty = new Label { text = "Henüz sıralama kaydı bulunamadı." };
+                empty.AddToClassList("leaderboard-empty");
+                card.Add(empty);
+            }
+            else
+            {
+                int rank = 1;
+                foreach (var user in result.items)
+                {
+                    if (user == null) continue;
+
+                    var row = new VisualElement();
+                    row.AddToClassList("leaderboard-row");
+
+                    var rankLabel = new Label { text = $"{rank}." };
+                    rankLabel.AddToClassList("leaderboard-rank");
+
+                    string fullName = $"{user.first_name} {user.last_name}".Trim();
+                    if (string.IsNullOrEmpty(fullName)) fullName = "(isimsiz)";
+                    var nameLabel = new Label { text = fullName };
+                    nameLabel.AddToClassList("leaderboard-name");
+
+                    var scoreLabel = new Label { text = $"{user.total_score} Puan" };
+                    scoreLabel.AddToClassList("leaderboard-score");
+
+                    row.Add(rankLabel);
+                    row.Add(nameLabel);
+                    row.Add(scoreLabel);
+                    card.Add(row);
+
+                    rank++;
+                }
+            }
+
+            var backBtn = new Button { text = "Sonuç Ekranına Dön" };
+            backBtn.AddToClassList("leaderboard-back-btn");
+            backBtn.clicked += ShowQuizResult;
+            card.Add(backBtn);
+
+            _creaturesScroll.Add(card);
+
+            Debug.Log($"[MainAppScreenController] Sıralama yüklendi: {result?.items?.Count ?? 0} öğrenci.");
+        }
+
+        // ══════════════════════════════════════════════════════════
         //  Yardımcı: güvenli element bulucu
         // ══════════════════════════════════════════════════════════
 
@@ -512,6 +924,14 @@ namespace FishMuseum.UI
                 Debug.LogError($"[MainAppScreenController] '{name}' ({typeof(T).Name}) " +
                                "UXML'de bulunamadı — name attribute'unu ve UXML'i kontrol edin.");
             return el;
+        }
+        [System.Serializable]
+        private class AnswerPayload
+        {
+            public string question_id;
+            public string user_id;
+            public bool is_correct;
+            public string chosen_option;
         }
     }
 }

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════
-   Kök kapsayıcı
+   Kök kapsayıcı — deniz altı arka plan
 ══════════════════════════════════════════════════════ */
 .screen-root {
     position: absolute;
@@ -10,16 +10,21 @@
     justify-content: center;
     align-items: center;
     padding: 5%;
-    background-color: rgb(18, 24, 38);
+    background-color: rgb(8, 22, 36);
 }
 
 /* ══════════════════════════════════════════════════════
-   Ekran grubu
+   Ekran grubu — koyu lacivert / turkuaz cam panel
 ══════════════════════════════════════════════════════ */
 .screen {
     width: 100%;
     max-width: 720px;
     flex-direction: column;
+    background-color: rgba(16, 40, 58, 0.94);
+    border-radius: 36px;
+    border-width: 2px;
+    border-color: rgba(95, 215, 235, 0.45);
+    padding: 56px 44px;
 }
 
 .hidden {
@@ -27,60 +32,62 @@
 }
 
 /* ══════════════════════════════════════════════════════
-   Başlık
+   Başlık — büyük, parlak, okunaklı
 ══════════════════════════════════════════════════════ */
 .title {
     font-size: 70px;
     -unity-font-style: bold;
-    color: rgb(240, 245, 255);
-    margin-bottom: 56px;
+    color: rgb(235, 250, 255);
+    margin-bottom: 48px;
     -unity-text-align: middle-center;
     white-space: normal;
 }
 
 /* ══════════════════════════════════════════════════════
-   Birincil buton  (mavi CTA)
+   Birincil buton — premium turkuaz-mavi CTA
 ══════════════════════════════════════════════════════ */
 .primary-btn {
     min-height: 120px;
     margin-top: 20px;
     padding: 20px 40px;
-    border-radius: 20px;
-    border-width: 0;
-    background-color: rgb(56, 132, 255);
+    border-radius: 24px;
+    border-width: 2px;
+    border-color: rgba(150, 240, 255, 0.5);
+    background-color: rgb(20, 150, 185);
     color: white;
     font-size: 40px;
     -unity-font-style: bold;
 }
 
-.primary-btn:hover  { background-color: rgb(76, 150, 255); }
-.primary-btn:active { background-color: rgb(36, 110, 230); }
+.primary-btn:hover  { background-color: rgb(30, 180, 215); }
+.primary-btn:active { background-color: rgb(15, 120, 150); }
 
 /* ══════════════════════════════════════════════════════
-   İkincil buton  (kenarlıklı koyu)
+   İkincil buton — cam hissi, turkuaz kenarlık
 ══════════════════════════════════════════════════════ */
 .secondary-btn {
     min-height: 120px;
     margin-top: 20px;
     padding: 20px 40px;
-    border-radius: 20px;
+    border-radius: 24px;
     border-width: 2px;
-    border-color: rgb(70, 90, 130);
-    background-color: rgb(26, 35, 52);
-    color: rgb(210, 225, 245);
+    border-color: rgba(120, 210, 235, 0.45);
+    background-color: rgba(30, 64, 90, 0.85);
+    color: rgb(220, 240, 250);
     font-size: 40px;
+    -unity-font-style: bold;
 }
 
-.secondary-btn:hover { background-color: rgb(34, 46, 68); }
+.secondary-btn:hover { background-color: rgba(40, 86, 118, 0.95); }
 
-/* Misafir varyantı — mavi kenarlık */
+/* Misafir varyantı — daha parlak turkuaz kenarlık */
 .guest-btn {
-    border-color: rgb(56, 132, 255);
-    background-color: rgb(24, 44, 76);
+    border-color: rgba(95, 220, 240, 0.7);
+    background-color: rgba(22, 56, 82, 0.9);
     color: white;
 }
 
-.guest-btn:hover { background-color: rgb(30, 54, 92); }
+.guest-btn:hover { background-color: rgba(32, 78, 108, 0.95); }
 
 /* ══════════════════════════════════════════════════════
    Link / Geri butonu
@@ -92,11 +99,11 @@
     border-radius: 16px;
     border-width: 0;
     background-color: transparent;
-    color: rgb(130, 160, 210);
+    color: rgb(130, 200, 230);
     font-size: 34px;
 }
 
-.link-btn:hover { color: rgb(180, 205, 245); }
+.link-btn:hover { color: rgb(170, 230, 250); }
 
 /* ══════════════════════════════════════════════════════
    Geri bildirim etiketi
@@ -105,7 +112,7 @@
     min-height: 52px;
     margin-top: 24px;
     font-size: 30px;
-    color: rgb(255, 185, 70);
+    color: rgb(255, 200, 90);
     -unity-text-align: middle-center;
     white-space: normal;
 }
@@ -116,39 +123,41 @@
 .selected-class {
     font-size: 40px;
     -unity-font-style: bold;
-    color: rgb(100, 200, 255);
+    color: rgb(125, 230, 245);
     margin-bottom: 32px;
     -unity-text-align: middle-center;
+    white-space: normal;
 }
 
 /* ══════════════════════════════════════════════════════
    Sınıf listesi ScrollView
 ══════════════════════════════════════════════════════ */
 .class-scroll {
-    max-height: 900px;
+    max-height: 760px;
     margin-top: 0;
     margin-bottom: 8px;
 }
 
 /* ══════════════════════════════════════════════════════
-   Dinamik sınıf butonu  (.class-item-btn)
+   Dinamik sınıf butonu (.class-item-btn) — cam kart
 ══════════════════════════════════════════════════════ */
 .class-item-btn {
     min-height: 120px;
     margin-bottom: 20px;
     padding: 20px 36px;
-    border-radius: 20px;
+    border-radius: 22px;
     border-width: 2px;
-    border-color: rgb(55, 75, 110);
-    background-color: rgb(30, 40, 58);
+    border-color: rgba(120, 210, 235, 0.4);
+    background-color: rgba(28, 60, 84, 0.85);
     color: white;
     font-size: 40px;
     -unity-font-style: bold;
     -unity-text-align: middle-left;
+    white-space: normal;
 }
 
-.class-item-btn:hover  { background-color: rgb(40, 55, 80);  border-color: rgb(56, 132, 255); }
-.class-item-btn:active { background-color: rgb(24, 44, 76); }
+.class-item-btn:hover  { background-color: rgba(40, 86, 118, 0.95); border-color: rgb(130, 230, 250); }
+.class-item-btn:active { background-color: rgba(24, 52, 76, 0.95); }
 
 /* ══════════════════════════════════════════════════════
    Form alanı (TextField sarmalayıcısı)
@@ -161,23 +170,23 @@
 /* Sunum etiketi ("Ad Soyad", "PIN" vb.) */
 .form-field > Label {
     font-size: 28px;
-    color: rgb(160, 180, 215);
+    color: rgb(150, 205, 230);
     margin-bottom: 10px;
 }
 
-/* Gerçek metin girişi */
+/* Gerçek metin girişi — modern, yuvarlatılmış */
 .form-field > .unity-text-field__input {
     min-height: 120px;
     padding: 20px 28px;
     font-size: 40px;
-    border-radius: 20px;
+    border-radius: 22px;
     border-width: 2px;
-    border-color: rgb(55, 75, 110);
-    background-color: rgb(30, 41, 59);
+    border-color: rgba(120, 210, 235, 0.4);
+    background-color: rgba(20, 44, 64, 0.9);
     color: white;
 }
 
 .form-field:focus > .unity-text-field__input {
-    border-color: rgb(56, 132, 255);
-    background-color: rgb(28, 44, 70);
+    border-color: rgb(95, 220, 240);
+    background-color: rgba(26, 56, 80, 0.95);
 }

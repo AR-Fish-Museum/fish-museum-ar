@@ -292,7 +292,7 @@ namespace FishMuseum.UI
         //  PIN doğrulama
         // ══════════════════════════════════════════════════════════════
 
-        private void OnConfirmPin()
+        private async void OnConfirmPin()
         {
             string fullName = _fullNameInput?.value.Trim() ?? string.Empty;
             string pin      = _pinInput?.value.Trim()      ?? string.Empty;
@@ -338,6 +338,71 @@ namespace FishMuseum.UI
                                "Grup oturumu kaydedilemeden devam ediliyor.");
             }
 
+            // ── Supabase users tablosuna öğrenci kaydı oluştur ────────
+            try
+            {
+                // Ad-soyad ayrıştır: ilk kelime first_name, geri kalan last_name
+                string firstName;
+                string lastName;
+
+                int spaceIndex = fullName.IndexOf(' ');
+                if (spaceIndex > 0)
+                {
+                    firstName = fullName.Substring(0, spaceIndex).Trim();
+                    lastName  = fullName.Substring(spaceIndex + 1).Trim();
+                    if (string.IsNullOrEmpty(lastName)) lastName = "-";
+                }
+                else
+                {
+                    firstName = fullName;
+                    lastName  = "-";
+                }
+
+                if (SupabaseClient.Instance == null)
+                {
+                    Debug.LogError("[LoginScreensController] SupabaseClient.Instance null — " +
+                                   "Öğrenci kaydı oluşturulamadı.");
+                }
+                else
+                {
+                    // JsonUtility ile güvenli body oluştur (kaçış karakterleri için)
+                    var payload = new NewStudentPayload
+                    {
+                        class_id   = CurrentClass.id,
+                        first_name = firstName,
+                        last_name  = lastName,
+                        role       = "student"
+                    };
+
+                    string json = JsonUtility.ToJson(payload);
+
+                    string response = await SupabaseClient.Instance.PostAsync("users", json);
+
+                    if (string.IsNullOrEmpty(response))
+                    {
+                        Debug.LogError("[LoginScreensController] users POST boş yanıt döndü.");
+                    }
+                    else
+                    {
+                        UserDataList result = UserDataList.FromJson(response);
+                        if (result?.items != null && result.items.Count > 0)
+                        {
+                            string newUserId = result.items[0].id;
+                            GameSession.Instance?.SetUserId(newUserId);
+                            Debug.Log($"[LoginScreensController] Öğrenci kaydı oluşturuldu. UserId: {newUserId}");
+                        }
+                        else
+                        {
+                            Debug.LogError("[LoginScreensController] users POST yanıtı parse edilemedi veya boş: " + response);
+                        }
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[LoginScreensController] Öğrenci kaydı sırasında hata: " + e.Message);
+            }
+
             if (_pinFeedback != null) _pinFeedback.text = $"Hoş geldin, {fullName}!";
 
             // AR sahnesine geçilmez — aynı sahnede ana uygulama UI'ına geçilir
@@ -365,6 +430,14 @@ namespace FishMuseum.UI
                 Debug.LogError($"[LoginScreensController] '{name}' ({typeof(T).Name}) " +
                                "UXML'de bulunamadı — name attribute'unu ve UXML'i kontrol edin.");
             return el;
+        }
+        [System.Serializable]
+        private class NewStudentPayload
+        {
+            public string class_id;
+            public string first_name;
+            public string last_name;
+            public string role;
         }
     }
 }
