@@ -890,7 +890,7 @@ MonoBehaviour:
   spawnOnStart: 1
   spawnDelay: 0.5
   clownfishScale: 1
-  sharkScale: 1
+  sharkScale: 0.3
   defaultRewardScale: 0.1
   parentToCameraInRewardMode: 1
   cameraLocalPosition: {x: 0, y: -0.1, z: 1.5}
