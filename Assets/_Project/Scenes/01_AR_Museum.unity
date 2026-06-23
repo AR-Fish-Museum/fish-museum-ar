@@ -852,6 +852,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1057016144
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1057016146}
+  - component: {fileID: 1057016145}
+  m_Layer: 0
+  m_Name: RewardFishSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1057016145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057016144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ab1539db5983846916191d73855145, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RewardFishSpawner
+  defaultFishPrefab: {fileID: 1260883131845032, guid: 704d7e9771f635d49b675a9e09b632ff, type: 3}
+  fishPlacementController: {fileID: 2041154615}
+  extraPlacementToDisable: []
+  spawnDistance: 1.2
+  verticalOffset: 0
+  modelScale: 0.8
+  spawnOnStart: 1
+  spawnDelay: 0.5
+  clownfishScale: 1
+  sharkScale: 1
+  defaultRewardScale: 0.1
+  parentToCameraInRewardMode: 1
+  cameraLocalPosition: {x: 0, y: -0.1, z: 1.5}
+  cameraLocalEulerAngles: {x: 0, y: 180, z: 0}
+  useOverlayCameraInRewardMode: 1
+  rewardLayerName: RewardFish
+  overlayCameraDepth: 10
+  spawnDebugCubeInsteadOfFish: 0
+--- !u!4 &1057016146
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057016144}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.66646, y: 12.42516, z: 25.98328}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1255131207
 GameObject:
   m_ObjectHideFlags: 0
@@ -868,7 +930,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1255131208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -995,7 +1057,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1997319603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1208,3 +1270,4 @@ SceneRoots:
   - {fileID: 1997319606}
   - {fileID: 1388371437}
   - {fileID: 1255131209}
+  - {fileID: 1057016146}

@@ -153,6 +153,10 @@ MonoBehaviour:
   <ClassId>k__BackingField: 
   <ClassName>k__BackingField: 
   <Score>k__BackingField: 0
+  <UserId>k__BackingField: 
+  <CorrectCount>k__BackingField: 0
+  <WrongCount>k__BackingField: 0
+  <AnsweredQuestionCount>k__BackingField: 0
 --- !u!4 &57722037
 Transform:
   m_ObjectHideFlags: 0
@@ -307,6 +311,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18970bee0eed4c842ac0c286b53de4e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishMuseum.UI.MainAppScreenController
+  rewardClownfishPrefab: {fileID: 1260883131845032, guid: 704d7e9771f635d49b675a9e09b632ff, type: 3}
+  rewardSharkPrefab: {fileID: 1276205554959560, guid: 110b86501fff2414186f46873d54d1ea, type: 3}
+  sharkUnlockCorrectCount: 4
+  sceneLoader: {fileID: 1553219960}
 --- !u!1 &1353890143
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,6 +471,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2e78a9f42470894d8102ddb273ec334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishMuseum.Core.SupabaseClient
+  supabaseUrlFallback: https://voqwpgsvclmmieaeqnwl.supabase.co
+  supabaseAnonKeyFallback: sb_publishable_obps_2KyiHbaav5x2IL9fQ__qeJXSSq
 --- !u!4 &1357406150
 Transform:
   m_ObjectHideFlags: 0

@@ -10,6 +10,16 @@ namespace FishMuseum.UI
     [RequireComponent(typeof(UIDocument))]
     public class MainAppScreenController : MonoBehaviour
     {
+        // ── Ödül balığı (Inspector'dan atanır) ─────────────────────
+        [Header("Ödül Balığı")]
+        [SerializeField] private GameObject rewardClownfishPrefab;
+        [SerializeField] private GameObject rewardSharkPrefab;
+        [SerializeField] private int        sharkUnlockCorrectCount = 4;
+
+        [Header("Sahne Geçişi")]
+        [SerializeField] private SceneLoader sceneLoader;
+
+
         // ── Sekme sabitleri ───────────────────────────────────────
         private const string TAB_CREATURES   = "Canlılar";
         private const string TAB_LEADERBOARD = "Sıralama";
@@ -53,6 +63,11 @@ namespace FishMuseum.UI
         // ── Sınıf soruları (quiz akışı) ───────────────────────────
         private List<QuestionData> _classQuestions;
         private int                _currentQuestionIndex;
+
+        // ── Şık karıştırma: fiziksel buton (A/B/C/D konumu) -> DB key (a/b/c/d) ──
+        private readonly string[]        _buttonKeys      = new string[4];
+        private readonly System.Action[] _optionHandlers  = new System.Action[4];
+        private static readonly string[] OptionDisplayLetters = { "A", "B", "C", "D" };
 
         // ══════════════════════════════════════════════════════════
         //  Start — UIDocument.Awake() bittikten sonra çalışır
@@ -499,11 +514,8 @@ namespace FishMuseum.UI
             if (_questionText != null)
                 _questionText.text = question.question_text ?? "Soru yüklenemedi.";
 
-            // Her soru açılışında şıkları temizleyip yeniden doldur
-            SetOptionButton(_btnOptA, "a", question.GetOptionA());
-            SetOptionButton(_btnOptB, "b", question.GetOptionB());
-            SetOptionButton(_btnOptC, "c", question.GetOptionC());
-            SetOptionButton(_btnOptD, "d", question.GetOptionD());
+            // Her soru açılışında şıkları rastgele sıraya koyup butonlara bağla
+            AssignShuffledOptions(question);
 
             if (_questionFeedback != null)
             {
@@ -533,6 +545,65 @@ namespace FishMuseum.UI
 
             _quizStatusLabel.style.display = DisplayStyle.Flex;
             _quizStatusLabel.text = $"Soru {x} / {y}  •  Puan: {z}";
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Şıkları rastgele sırala — DB key korunur, sadece görünüm değişir
+        // ══════════════════════════════════════════════════════════
+
+        private void AssignShuffledOptions(QuestionData question)
+        {
+            Button[] buttons = { _btnOptA, _btnOptB, _btnOptC, _btnOptD };
+
+            // DB key + metin çiftleri (orijinal a/b/c/d korunur)
+            var entries = new System.Collections.Generic.List<(string key, string text)>
+            {
+                ("a", question.GetOptionA()),
+                ("b", question.GetOptionB()),
+                ("c", question.GetOptionC()),
+                ("d", question.GetOptionD()),
+            };
+
+            // Fisher-Yates karıştırma
+            for (int i = entries.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (entries[i], entries[j]) = (entries[j], entries[i]);
+            }
+
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                Button btn = buttons[i];
+                if (btn == null) continue;
+
+                string dbKey         = entries[i].key;   // bu fiziksel butonun DB anahtarı
+                string optionText    = entries[i].text;
+                string displayLetter = OptionDisplayLetters[i];
+
+                _buttonKeys[i] = dbKey;
+
+                btn.text = $"{displayLetter}) {optionText ?? "—"}";
+                btn.SetEnabled(true);
+                btn.RemoveFromClassList("option-correct");
+                btn.RemoveFromClassList("option-wrong");
+
+                // Önceki handler'ı kaldır (clicked event'lerinin birikmesini önle)
+                if (_optionHandlers[i] != null)
+                    btn.clicked -= _optionHandlers[i];
+
+                // dbKey her döngüde yeni bir local; closure güvenli
+                System.Action handler = () => CheckAnswer(dbKey);
+                _optionHandlers[i] = handler;
+                btn.clicked += handler;
+            }
+        }
+
+        /// <summary>DB key'in (a/b/c/d) ekrandaki görünen harfini (A/B/C/D) döndürür.</summary>
+        private string GetDisplayLetterForKey(string key)
+        {
+            for (int i = 0; i < _buttonKeys.Length; i++)
+                if (_buttonKeys[i] == key) return OptionDisplayLetters[i];
+            return key?.ToUpper() ?? string.Empty;
         }
 
         /// <summary>
@@ -574,11 +645,10 @@ namespace FishMuseum.UI
             string correct = _currentQuestion.correct_option?.ToLower() ?? string.Empty;
             bool   isRight = chosen == correct;
 
-            // Tüm şıkları kilitle ve renk ver
-            MarkOption(_btnOptA, "a", chosen, correct);
-            MarkOption(_btnOptB, "b", chosen, correct);
-            MarkOption(_btnOptC, "c", chosen, correct);
-            MarkOption(_btnOptD, "d", chosen, correct);
+            // Tüm şıkları kilitle ve renk ver (her butonun gerçek DB key'iyle)
+            Button[] optionButtons = { _btnOptA, _btnOptB, _btnOptC, _btnOptD };
+            for (int i = 0; i < optionButtons.Length; i++)
+                MarkOption(optionButtons[i], _buttonKeys[i], chosen, correct);
 
             // Cevabı GameSession quiz sayaçlarına/puanına kaydet
             if (GameSession.Instance != null)
@@ -631,7 +701,7 @@ namespace FishMuseum.UI
                 }
                 else
                 {
-                    _questionFeedback.text = $"Yanlış! Doğru cevap: {correct.ToUpper()}";
+                    _questionFeedback.text = $"Yanlış! Doğru cevap: {GetDisplayLetterForKey(correct)}";
                     _questionFeedback.AddToClassList("feedback-wrong");
                 }
             }
@@ -778,6 +848,12 @@ namespace FishMuseum.UI
             };
             card.Add(restartBtn);
 
+            // Balığımı Gör — quiz performansına göre ödül balığı + AR sahnesi
+            var viewFishBtn = new Button { text = "Balığımı Gör 🐟" };
+            viewFishBtn.AddToClassList("quiz-result-view-fish-btn");
+            viewFishBtn.clicked += OnViewRewardFishClicked;
+            card.Add(viewFishBtn);
+
             // Sıralamayı Gör — aynı sınıftaki öğrenci sıralaması
             var leaderboardBtn = new Button { text = "Sıralamayı Gör" };
             leaderboardBtn.AddToClassList("quiz-result-leaderboard-btn");
@@ -788,6 +864,60 @@ namespace FishMuseum.UI
 
             Debug.Log($"[MainAppScreenController] Quiz tamamlandı — Puan: {score}, " +
                       $"Doğru: {correct}, Yanlış: {wrong}, Cevaplanan: {answered}/{total}");
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Balığımı Gör — skora göre ödül balığı seç + AR sahnesine geç
+        // ══════════════════════════════════════════════════════════
+
+        private void OnViewRewardFishClicked()
+        {
+            if (GameSession.Instance == null)
+            {
+                Debug.LogError("[MainAppScreenController] GameSession.Instance null — ödül balığı seçilemedi.");
+                return;
+            }
+
+            int correctCount = GameSession.Instance.CorrectCount;
+
+            GameObject selectedPrefab;
+            string     fishId;
+            string     fishName;
+
+            if (correctCount >= sharkUnlockCorrectCount)
+            {
+                selectedPrefab = rewardSharkPrefab;
+                fishId         = "reward_shark";
+                fishName       = "Büyük Beyaz Köpekbalığı";
+            }
+            else
+            {
+                selectedPrefab = rewardClownfishPrefab;
+                fishId         = "reward_clownfish";
+                fishName       = "Palyaço Balığı";
+            }
+
+            if (selectedPrefab == null)
+            {
+                Debug.LogError($"[MainAppScreenController] Ödül balığı prefab'ı atanmamış " +
+                               $"(correctCount: {correctCount}, fishId: {fishId}). " +
+                               "Inspector'dan rewardClownfishPrefab / rewardSharkPrefab atayın.");
+                return;
+            }
+
+            SelectedFishSession.SelectFish(fishId, fishName, selectedPrefab);
+            Debug.Log($"[MainAppScreenController] Ödül balığı seçildi: {fishName} " +
+                      $"(id: {fishId}, doğru: {correctCount}/{sharkUnlockCorrectCount}).");
+
+            if (sceneLoader != null)
+            {
+                sceneLoader.LoadRealARScene();
+            }
+            else
+            {
+                Debug.LogError("[MainAppScreenController] sceneLoader null — " +
+                               "Inspector'dan SceneLoader referansı bağlanmamış. AR sahnesine geçilemedi.");
+            }
         }
 
         // ══════════════════════════════════════════════════════════

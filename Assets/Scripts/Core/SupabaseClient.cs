@@ -14,8 +14,13 @@ namespace FishMuseum.Core
     public class SupabaseClient : MonoBehaviour
     {
         // ──────────────────────────────────────────────────
-        //  Bağlantı bilgileri — .env dosyasından okunur
+        //  Bağlantı bilgileri — önce .env, yoksa Inspector fallback
         // ──────────────────────────────────────────────────
+        [Header("Supabase Fallback (Android build için)")]
+        [Tooltip("Sadece Supabase ANON/PUBLIC key kullanın. Service role key ASLA girmeyin.")]
+        [SerializeField] private string supabaseUrlFallback;
+        [SerializeField] private string supabaseAnonKeyFallback;
+
         private string _supabaseUrl;
         private string _supabaseAnonKey;
 
@@ -36,14 +41,39 @@ namespace FishMuseum.Core
 
             EnvLoader.Load();
 
-            _supabaseUrl     = EnvLoader.Get("SUPABASE_URL");
-            _supabaseAnonKey = EnvLoader.Get("SUPABASE_ANON_KEY");
+            string envUrl = EnvLoader.Get("SUPABASE_URL");
+            string envKey = EnvLoader.Get("SUPABASE_ANON_KEY");
+
+            bool hasEnvUrl      = !string.IsNullOrEmpty(envUrl);
+            bool hasEnvKey      = !string.IsNullOrEmpty(envKey);
+            bool hasFallbackUrl = !string.IsNullOrEmpty(supabaseUrlFallback);
+
+            // env doluysa env, değilse Inspector fallback
+            _supabaseUrl     = hasEnvUrl ? envUrl : supabaseUrlFallback;
+            _supabaseAnonKey = hasEnvKey ? envKey : supabaseAnonKeyFallback;
+
+            // Base URL temizliği
+            if (!string.IsNullOrEmpty(_supabaseUrl))
+            {
+                _supabaseUrl = _supabaseUrl.Trim().TrimEnd('/');
+
+                if (!_supabaseUrl.StartsWith("https://"))
+                {
+                    Debug.LogError("[SupabaseClient] Base URL 'https://' ile başlamıyor: " +
+                                   _supabaseUrl + " — geçerli bir Supabase URL girin.");
+                }
+            }
+
+            // Durum logları (anon key DEĞERİ asla loglanmaz)
+            Debug.Log($"[SupabaseClient] Env URL var mı: {hasEnvUrl}");
+            Debug.Log($"[SupabaseClient] Fallback URL var mı: {hasFallbackUrl}");
+            Debug.Log($"[SupabaseClient] Final BaseUrl set: {!string.IsNullOrEmpty(_supabaseUrl)}");
+            Debug.Log($"[SupabaseClient] AnonKey set: {!string.IsNullOrEmpty(_supabaseAnonKey)}");
 
             if (string.IsNullOrEmpty(_supabaseUrl) || string.IsNullOrEmpty(_supabaseAnonKey))
             {
-                Debug.LogError("[SupabaseClient] SUPABASE_URL veya SUPABASE_ANON_KEY " +
-                               ".env dosyasında bulunamadı ya da boş. " +
-                               "Proje kök dizinindeki .env dosyasını kontrol edin.");
+                Debug.LogError("[SupabaseClient] Supabase URL veya ANON KEY boş. " +
+                               "Editor'da .env, Android build'de Inspector fallback alanlarını kontrol edin.");
             }
         }
 
@@ -138,6 +168,12 @@ namespace FishMuseum.Core
         /// </summary>
         private string BuildUrl(string endpoint)
         {
+            if (string.IsNullOrEmpty(_supabaseUrl))
+            {
+                Debug.LogError("[SupabaseClient] BaseUrl boş. Supabase bağlantısı kurulamaz.");
+                return endpoint;
+            }
+            
             // 1) Base URL'den sondaki slash ve varsa rest/v1 ön ekini temizle
             string baseUrl = _supabaseUrl.TrimEnd('/');
             if (baseUrl.EndsWith("/rest/v1")) baseUrl = baseUrl[..^"/rest/v1".Length];
