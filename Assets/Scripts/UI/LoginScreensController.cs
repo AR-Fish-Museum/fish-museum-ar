@@ -10,10 +10,10 @@ namespace FishMuseum.UI
     public class LoginScreensController : MonoBehaviour
     {
         // ── Inspector referansları ────────────────────────────────────
-        [SerializeField] private GameObject mainAppUIObject; // Yeni ana ekran objemiz
+        [SerializeField] private GameObject mainAppUIObject;
         [SerializeField] private SceneLoader sceneLoader;
         [SerializeField] private string      tableEndpoint = "classes";
-        [SerializeField] private string teacherMasterPin = "1234";
+        [SerializeField] private string      teacherMasterPin = "1234";
 
         // ── Ekran grupları ────────────────────────────────────────────
         private VisualElement _mainMenu;
@@ -26,8 +26,7 @@ namespace FishMuseum.UI
         private ScrollView _classListScroll;
         private Label      _classFeedback;
 
-        // ── PIN ekranı ────────────────────────────────────────────────
-        private Label     _selectedClassLabel;
+        // ── Öğrenci giriş ekranı ──────────────────────────────────────
         private TextField _fullNameInput;
         private TextField _pinInput;
         private Label     _pinFeedback;
@@ -37,7 +36,7 @@ namespace FishMuseum.UI
         private Button _btnRoleTeacher;
         private Button _btnConfirm;
         private Button _btnBackToMenu;
-        private Button _btnBackToClass;
+        private Button _btnStudentBack;
 
         private TextField _teacherPinInput;
         private Label     _teacherPinFeedback;
@@ -48,13 +47,9 @@ namespace FishMuseum.UI
         // ── Durum ─────────────────────────────────────────────────────
         public ClassData CurrentClass { get; private set; }
 
-        // ══════════════════════════════════════════════════════════════
-        //  Start — UIDocument.Awake()'i bitirdikten SONRA çalışır;
-        //  bu sayede rootVisualElement'in UXML ağacı dolu olur.
-        //  (Awake içinde Q<>() çağrısı UIDocument hazır olmadan
-        //   boş ağaç döndürerek tüm event bağlamalarını sessizce
-        //   atlatıyordu — timing bug düzeltildi.)
-        // ══════════════════════════════════════════════════════════════
+        // Öğrenci giriş ekranında girilen geçici değerler
+        private string _pendingStudentFullName;
+        private string _pendingStudentPin;
 
         private void Start()
         {
@@ -68,8 +63,7 @@ namespace FishMuseum.UI
             var root = doc.rootVisualElement;
             if (root == null)
             {
-                Debug.LogError("[LoginScreensController] rootVisualElement null. " +
-                               "UIDocument 'Source Asset' alanına LoginScreens.uxml atandığından emin olun.");
+                Debug.LogError("[LoginScreensController] rootVisualElement null.");
                 return;
             }
 
@@ -77,25 +71,24 @@ namespace FishMuseum.UI
             _mainMenu        = Require<VisualElement>(root, "main-menu");
             _classSelection  = Require<VisualElement>(root, "class-selection");
             _pinRegistration = Require<VisualElement>(root, "pin-registration");
-            _teacherPin   = Require<VisualElement>(root, "teacher-pin");
-            _teacherPanel = Require<VisualElement>(root, "teacher-panel");
+            _teacherPin      = Require<VisualElement>(root, "teacher-pin");
+            _teacherPanel    = Require<VisualElement>(root, "teacher-panel");
 
             // ── Sınıf listesi ─────────────────────────────────────────
             _classListScroll = Require<ScrollView>(root, "class-list-scroll");
             _classFeedback   = Require<Label>(root, "class-feedback");
 
-            // ── PIN ekranı ────────────────────────────────────────────
-            _selectedClassLabel = Require<Label>(root, "selected-class-label");
-            _fullNameInput      = Require<TextField>(root, "full-name-input");
-            _pinInput           = Require<TextField>(root, "pin-input");
-            _pinFeedback        = Require<Label>(root, "pin-feedback");
+            // ── Öğrenci giriş ekranı ──────────────────────────────────
+            _fullNameInput = Require<TextField>(root, "full-name-input");
+            _pinInput      = Require<TextField>(root, "pin-input");
+            _pinFeedback   = Require<Label>(root, "pin-feedback");
 
             // ── Sabit butonlar ────────────────────────────────────────
             _btnRoleStudent = Require<Button>(root, "btn-role-student");
             _btnRoleTeacher = Require<Button>(root, "btn-role-teacher");
             _btnConfirm     = Require<Button>(root, "btn-confirm");
             _btnBackToMenu  = Require<Button>(root, "btn-back-to-menu");
-            _btnBackToClass = Require<Button>(root, "btn-back-to-class");
+            _btnStudentBack = Require<Button>(root, "btn-student-back");
 
             _teacherPinInput     = Require<TextField>(root, "teacher-pin-input");
             _teacherPinFeedback  = Require<Label>(root, "teacher-pin-feedback");
@@ -104,25 +97,18 @@ namespace FishMuseum.UI
             _btnTeacherPanelBack = Require<Button>(root, "btn-teacher-panel-back");
 
             // ── Event bağlantıları ────────────────────────────────────
-            if (_btnRoleStudent != null)
-                _btnRoleStudent.clicked += () =>
-                {
-                    Debug.Log("[LoginScreensController] Öğrenci seçildi.");
-                    _ = LoadActiveClassesAsync();
-                };
-
+            if (_btnRoleStudent != null) _btnRoleStudent.clicked += ShowStudentLogin;
             if (_btnRoleTeacher != null) _btnRoleTeacher.clicked += ShowTeacherPin;
 
-            if (_btnConfirm     != null) _btnConfirm.clicked     += OnConfirmPin;
+            if (_btnConfirm     != null) _btnConfirm.clicked     += OnStudentContinue;
             if (_btnBackToMenu  != null) _btnBackToMenu.clicked  += ShowMainMenu;
-            if (_btnBackToClass != null) _btnBackToClass.clicked += ShowClassSelection;
+            if (_btnStudentBack != null) _btnStudentBack.clicked += ShowMainMenu;
 
             if (_btnTeacherConfirm   != null) _btnTeacherConfirm.clicked   += OnTeacherConfirm;
             if (_btnTeacherBack      != null) _btnTeacherBack.clicked      += ShowMainMenu;
             if (_btnTeacherPanelBack != null) _btnTeacherPanelBack.clicked += ShowMainMenu;
 
-            Debug.Log("[LoginScreensController] Start tamamlandı — tüm event'ler bağlandı.");
-
+            Debug.Log("[LoginScreensController] Start tamamlandı.");
             ShowMainMenu();
         }
 
@@ -148,18 +134,40 @@ namespace FishMuseum.UI
             ShowScreen(_classSelection);
         }
 
-        private void ShowPinRegistration(ClassData selected)
+        // ── Öğrenci giriş ekranı (önce isim + PIN) ────────────────────
+        private void ShowStudentLogin()
         {
-            CurrentClass = selected;
-
-            if (_selectedClassLabel != null)
-                _selectedClassLabel.text = selected.class_name;
-
             if (_fullNameInput != null) _fullNameInput.value = string.Empty;
             if (_pinInput      != null) _pinInput.value      = string.Empty;
             if (_pinFeedback   != null) _pinFeedback.text    = string.Empty;
 
+            _pendingStudentFullName = string.Empty;
+            _pendingStudentPin      = string.Empty;
+
             ShowScreen(_pinRegistration);
+        }
+
+        private void OnStudentContinue()
+        {
+            string fullName = _fullNameInput?.value.Trim() ?? string.Empty;
+            string pin      = _pinInput?.value.Trim()      ?? string.Empty;
+
+            if (string.IsNullOrEmpty(fullName))
+            {
+                if (_pinFeedback != null) _pinFeedback.text = "Lütfen adınızı ve soyadınızı girin.";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(pin))
+            {
+                if (_pinFeedback != null) _pinFeedback.text = "Lütfen PIN kodunu girin.";
+                return;
+            }
+
+            _pendingStudentFullName = fullName;
+            _pendingStudentPin      = pin;
+
+            _ = LoadActiveClassesAsync();
         }
 
         // ── Öğretmen akışı ────────────────────────────────────────────
@@ -194,28 +202,21 @@ namespace FishMuseum.UI
         }
 
         // ══════════════════════════════════════════════════════════════
-        //  Supabase — aktif sınıfları yükle
+        //  Supabase — aktif sınıfları yükle (PIN ön kontrolü ile)
         // ══════════════════════════════════════════════════════════════
 
         private async Task LoadActiveClassesAsync()
         {
-            Debug.Log("[LoginScreensController] Sınıflar çekiliyor...");
-
-            // ── ScrollView guard ──────────────────────────────────────
             if (_classListScroll == null)
             {
-                Debug.LogError("[LoginScreensController] _classListScroll null — " +
-                               "UXML'de 'class-list-scroll' ScrollView bulunamadı.");
+                Debug.LogError("[LoginScreensController] _classListScroll null.");
                 return;
             }
 
-            // ── SupabaseClient guard ──────────────────────────────────
             if (SupabaseClient.Instance == null)
             {
-                Debug.LogError("[LoginScreensController] SupabaseClient.Instance null. " +
-                               "SupabaseClient bileşeninin sahneye eklendiğinden ve " +
-                               "Bootstrap/LoginScene hiyerarşisinde var olduğundan emin olun.");
-                if (_classFeedback != null) _classFeedback.text = "Sunucu bağlantısı kurulamadı.";
+                Debug.LogError("[LoginScreensController] SupabaseClient.Instance null.");
+                if (_pinFeedback != null) _pinFeedback.text = "Sunucu bağlantısı kurulamadı.";
                 return;
             }
 
@@ -223,14 +224,9 @@ namespace FishMuseum.UI
             _classListScroll.style.flexGrow = 1;
             _classListScroll.style.width    = new StyleLength(StyleKeyword.Auto);
 
-            if (_classFeedback != null) _classFeedback.text = "Sınıflar yükleniyor...";
+            if (_pinFeedback != null) _pinFeedback.text = "Sınıflar yükleniyor...";
 
-            ShowClassSelection();
-
-            // ── API isteği ────────────────────────────────────────────
-            // Sadece tablo adı — rest/v1/ ön ekini SupabaseClient.BuildUrl ekler
             string endpoint = "classes?is_archived=eq.false&order=class_name.asc";
-            Debug.Log("[LoginScreensController] Endpoint: " + endpoint);
 
             string json;
             try
@@ -239,21 +235,17 @@ namespace FishMuseum.UI
             }
             catch (System.Exception e)
             {
-                Debug.LogError("[LoginScreensController] API Hatası: " + e.Message +
-                               "\nStackTrace: " + e.StackTrace);
-                if (_classFeedback != null) _classFeedback.text = "Beklenmedik bir hata oluştu.";
+                Debug.LogError("[LoginScreensController] API Hatası: " + e.Message);
+                if (_pinFeedback != null) _pinFeedback.text = "Beklenmedik bir hata oluştu.";
                 return;
             }
 
             if (json == null)
             {
-                if (_classFeedback != null) _classFeedback.text = "Bağlantı hatası. Lütfen tekrar deneyin.";
+                if (_pinFeedback != null) _pinFeedback.text = "Bağlantı hatası. Lütfen tekrar deneyin.";
                 return;
             }
 
-            Debug.Log($"[LoginScreensController] Ham JSON yanıtı: {json}");
-
-            // ── JSON parse ────────────────────────────────────────────
             ClassDataList result;
             try
             {
@@ -261,90 +253,114 @@ namespace FishMuseum.UI
             }
             catch (System.Exception e)
             {
-                Debug.LogError("[LoginScreensController] JSON parse hatası: " + e.Message +
-                               "\nStackTrace: " + e.StackTrace);
-                if (_classFeedback != null) _classFeedback.text = "Veri işlenirken hata oluştu.";
+                Debug.LogError("[LoginScreensController] JSON parse hatası: " + e.Message);
+                if (_pinFeedback != null) _pinFeedback.text = "Veri işlenirken hata oluştu.";
                 return;
             }
-
-            Debug.Log($"[LoginScreensController] Gelen sınıf sayısı: {result?.items?.Count ?? 0}");
 
             if (result?.items == null || result.items.Count == 0)
             {
-                if (_classFeedback != null) _classFeedback.text = "Henüz aktif sınıf bulunamadı.";
+                if (_pinFeedback != null) _pinFeedback.text = "Henüz aktif sınıf bulunamadı.";
                 return;
             }
 
-            if (_classFeedback != null) _classFeedback.text = string.Empty;
+            // ── PIN ön kontrolü: en az bir sınıfın student_pin'i eşleşmeli ──
+            bool anyPinMatch = false;
+            foreach (var c in result.items)
+            {
+                if (c != null && c.student_pin == _pendingStudentPin)
+                {
+                    anyPinMatch = true;
+                    break;
+                }
+            }
 
-            // ── Buton oluşturma ───────────────────────────────────────
+            if (!anyPinMatch)
+            {
+                if (_pinFeedback != null) _pinFeedback.text = "Öğrenci PIN hatalı.";
+                return;
+            }
+
+            if (_pinFeedback != null) _pinFeedback.text = string.Empty;
+
+            // ── Sınıf butonları ───────────────────────────────────────
             foreach (var classData in result.items)
             {
-                if (classData == null)
-                {
-                    Debug.LogWarning("[LoginScreensController] Listede null ClassData kaydı atlandı.");
-                    continue;
-                }
+                if (classData == null) continue;
 
                 var captured = classData;
-
                 Button btn;
                 try
                 {
                     btn = new Button();
                     btn.text = captured.class_name ?? "(isimsiz sınıf)";
-                    btn.clicked += () => ShowPinRegistration(captured);
+                    btn.clicked += () => OnStudentSelectedClass(captured);
                     btn.AddToClassList("class-item-btn");
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError("[LoginScreensController] Buton oluşturma hatası: " + e.Message +
-                                   "\nStackTrace: " + e.StackTrace);
+                    Debug.LogError("[LoginScreensController] Buton oluşturma hatası: " + e.Message);
                     continue;
                 }
 
                 _classListScroll.Add(btn);
-                Debug.Log($"[LoginScreensController] Sınıf butonu eklendi: {captured.class_name}");
             }
 
-            Debug.Log($"[LoginScreensController] Toplam {result.items.Count} sınıf listelendi.");
+            ShowClassSelection();
         }
 
         // ══════════════════════════════════════════════════════════════
-        //  Misafir girişi
+        //  Sınıf seçimi — PIN sınıfla eşleşiyorsa quiz başlat
+        // ══════════════════════════════════════════════════════════════
+
+        private void OnStudentSelectedClass(ClassData selected)
+        {
+            CurrentClass = selected;
+
+            string pin = string.IsNullOrEmpty(_pendingStudentPin)
+                ? (_pinInput?.value.Trim() ?? string.Empty)
+                : _pendingStudentPin;
+
+            if (selected == null || selected.student_pin != pin)
+            {
+                if (_classFeedback != null)
+                    _classFeedback.text = "Bu sınıfın PIN'i girdiğiniz PIN ile eşleşmiyor.";
+                return;
+            }
+
+            // PIN eşleşti — mevcut kayıt/oturum/quiz başlatma akışını çalıştır
+            OnConfirmPin();
+        }
+
+        // ══════════════════════════════════════════════════════════════
+        //  Misafir girişi (dead code — menüden kaldırıldı, dokunma)
         // ══════════════════════════════════════════════════════════════
 
         private void OnJoinAsGuest()
         {
             Debug.Log("[LoginScreensController] Misafir girişi yapıldı, balık galerisine geçiliyor...");
 
-            // Oturumu misafir olarak işaretle (IsGuest=true, StudentName="Misafir", Score=0)
             if (GameSession.Instance != null)
             {
                 GameSession.Instance.SetGuestSession();
             }
             else
             {
-                Debug.LogError("[LoginScreensController] GameSession.Instance null — " +
-                               "LoginScene içinde GameSession objesinin bulunduğundan emin olun. " +
-                               "Misafir oturumu kaydedilemeden devam ediliyor.");
+                Debug.LogError("[LoginScreensController] GameSession.Instance null.");
             }
 
-            // Misafir → AR balık keşif sahnesine geç (MainApp_UI açılmaz, login UI kapatılmaz)
             if (sceneLoader != null)
             {
                 sceneLoader.LoadFishGalleryScene();
             }
             else
             {
-                Debug.LogError("[LoginScreensController] sceneLoader null — " +
-                               "Inspector'dan SceneLoader referansı bağlanmamış. " +
-                               "Misafir AR sahnesine geçemedi.");
+                Debug.LogError("[LoginScreensController] sceneLoader null.");
             }
         }
 
         // ══════════════════════════════════════════════════════════════
-        //  PIN doğrulama
+        //  PIN doğrulama + öğrenci kaydı + ana ekrana geçiş (değişmedi)
         // ══════════════════════════════════════════════════════════════
 
         private async void OnConfirmPin()
@@ -377,7 +393,6 @@ namespace FishMuseum.UI
                 return;
             }
 
-            // PIN doğru — grup oturumunu kaydet
             if (GameSession.Instance != null)
             {
                 string studentName = string.IsNullOrEmpty(fullName) ? "Öğrenci" : fullName;
@@ -388,15 +403,11 @@ namespace FishMuseum.UI
             }
             else
             {
-                Debug.LogError("[LoginScreensController] GameSession.Instance null — " +
-                               "LoginScene içinde GameSession objesinin bulunduğundan emin olun. " +
-                               "Grup oturumu kaydedilemeden devam ediliyor.");
+                Debug.LogError("[LoginScreensController] GameSession.Instance null.");
             }
 
-            // ── Supabase users tablosuna öğrenci kaydı oluştur ────────
             try
             {
-                // Ad-soyad ayrıştır: ilk kelime first_name, geri kalan last_name
                 string firstName;
                 string lastName;
 
@@ -415,12 +426,10 @@ namespace FishMuseum.UI
 
                 if (SupabaseClient.Instance == null)
                 {
-                    Debug.LogError("[LoginScreensController] SupabaseClient.Instance null — " +
-                                   "Öğrenci kaydı oluşturulamadı.");
+                    Debug.LogError("[LoginScreensController] SupabaseClient.Instance null — öğrenci kaydı oluşturulamadı.");
                 }
                 else
                 {
-                    // JsonUtility ile güvenli body oluştur (kaçış karakterleri için)
                     var payload = new NewStudentPayload
                     {
                         class_id   = CurrentClass.id,
@@ -430,7 +439,6 @@ namespace FishMuseum.UI
                     };
 
                     string json = JsonUtility.ToJson(payload);
-
                     string response = await SupabaseClient.Instance.PostAsync("users", json);
 
                     if (string.IsNullOrEmpty(response))
@@ -448,7 +456,7 @@ namespace FishMuseum.UI
                         }
                         else
                         {
-                            Debug.LogError("[LoginScreensController] users POST yanıtı parse edilemedi veya boş: " + response);
+                            Debug.LogError("[LoginScreensController] users POST yanıtı parse edilemedi: " + response);
                         }
                     }
                 }
@@ -460,32 +468,29 @@ namespace FishMuseum.UI
 
             if (_pinFeedback != null) _pinFeedback.text = $"Hoş geldin, {fullName}!";
 
-            // AR sahnesine geçilmez — aynı sahnede ana uygulama UI'ına geçilir
             if (mainAppUIObject != null)
             {
-                mainAppUIObject.SetActive(true);  // Öğrenci/quiz ekranını aç
-                this.gameObject.SetActive(false); // Login UI'ını (kendini) gizle
+                mainAppUIObject.SetActive(true);
+                this.gameObject.SetActive(false);
             }
             else
             {
-                Debug.LogError("[LoginScreensController] mainAppUIObject null — " +
-                               "Ana uygulama UI objesi Inspector'dan bağlanmamış. " +
-                               "Grup girişi sonrası ekran açılamadı.");
+                Debug.LogError("[LoginScreensController] mainAppUIObject null.");
             }
         }
 
         // ══════════════════════════════════════════════════════════════
-        //  Yardımcı: güvenli element bulucu
+        //  Yardımcı
         // ══════════════════════════════════════════════════════════════
 
         private T Require<T>(VisualElement root, string name) where T : VisualElement
         {
             var el = root.Q<T>(name);
             if (el == null)
-                Debug.LogError($"[LoginScreensController] '{name}' ({typeof(T).Name}) " +
-                               "UXML'de bulunamadı — name attribute'unu ve UXML'i kontrol edin.");
+                Debug.LogError($"[LoginScreensController] '{name}' ({typeof(T).Name}) UXML'de bulunamadı.");
             return el;
         }
+
         [System.Serializable]
         private class NewStudentPayload
         {

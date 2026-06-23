@@ -17,15 +17,14 @@
             <ui:Button name="btn-back-to-menu" text="Geri Dön" class="link-btn" />
         </ui:VisualElement>
 
-        <!-- Grup 3 · Öğrenci Girişi (PIN) -->
+        <!-- Grup 3 · Öğrenci Girişi (önce isim + PIN) -->
         <ui:VisualElement name="pin-registration" class="screen hidden">
             <ui:Label text="Öğrenci Girişi" class="title" />
-            <ui:Label name="selected-class-label" class="selected-class" />
             <ui:TextField name="full-name-input" label="Ad Soyad" class="form-field" />
             <ui:TextField name="pin-input" label="PIN" password="true" class="form-field" />
-            <ui:Button name="btn-confirm" text="Giriş Yap" class="primary-btn" />
+            <ui:Button name="btn-confirm" text="Devam Et" class="primary-btn" />
             <ui:Label name="pin-feedback" class="feedback" />
-            <ui:Button name="btn-back-to-class" text="Başka Sınıf Seç" class="link-btn" />
+            <ui:Button name="btn-student-back" text="Geri" class="link-btn" />
         </ui:VisualElement>
 
         <!-- Grup 4 · Öğretmen Girişi (PIN) -->
