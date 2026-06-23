@@ -36,11 +36,25 @@
             <ui:Button name="btn-teacher-back" text="Geri" class="link-btn" />
         </ui:VisualElement>
 
-        <!-- Grup 5 · Öğretmen Paneli (placeholder) -->
+        <!-- Grup 5 · Öğretmen Paneli (form) -->
         <ui:VisualElement name="teacher-panel" class="screen hidden">
             <ui:Label text="Öğretmen Paneli" class="title" />
-            <ui:Label text="Sınıf ve soru oluşturma paneli bir sonraki adımda eklenecek."
-                      class="panel-info" />
+            <ui:ScrollView name="teacher-panel-scroll" class="class-scroll">
+                <ui:TextField name="teacher-class-name-input" label="Sınıf (örn. 7/A)" class="form-field" />
+                <ui:Button name="btn-teacher-load-questions" text="Soruları Listele" class="secondary-btn" />
+
+                <ui:VisualElement name="teacher-question-list" />
+
+                <ui:TextField name="teacher-question-input" label="Soru Metni" class="form-field" />
+                <ui:TextField name="teacher-option-a-input" label="A şıkkı" class="form-field" />
+                <ui:TextField name="teacher-option-b-input" label="B şıkkı" class="form-field" />
+                <ui:TextField name="teacher-option-c-input" label="C şıkkı" class="form-field" />
+                <ui:TextField name="teacher-option-d-input" label="D şıkkı" class="form-field" />
+                <ui:DropdownField name="teacher-correct-dropdown" label="Doğru Cevap" class="form-field" />
+                <ui:Button name="btn-teacher-save-question" text="Soruyu Kaydet" class="primary-btn" />
+                <ui:Button name="btn-teacher-cancel-edit" text="Düzenlemeyi İptal Et" class="link-btn hidden" />
+                <ui:Label name="teacher-panel-feedback" class="feedback" />
+            </ui:ScrollView>
             <ui:Button name="btn-teacher-panel-back" text="Geri Dön" class="link-btn" />
         </ui:VisualElement>
 

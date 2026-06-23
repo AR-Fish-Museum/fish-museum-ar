@@ -161,6 +161,50 @@ namespace FishMuseum.Core
             return request.downloadHandler.text;
         }
 
+        /// <summary>
+        /// Verilen endpoint'e JSON body ile PATCH (güncelleme) isteği gönderir.
+        /// PostAsync ile aynı header yapısını kullanır; eklenen/güncellenen satırı döndürür.
+        /// </summary>
+        public async Task<string> PatchAsync(string endpoint, string jsonBody)
+        {
+            string finalUrl = BuildUrl(endpoint);
+            byte[] bodyBytes = Encoding.UTF8.GetBytes(jsonBody);
+
+            // PATCH'i Put üzerinden kur + method override:
+            // new UnityWebRequest(url, "PATCH") bazı platformlarda (Android) header/method
+            // düşürüp 401'e yol açabiliyor. Put yerleşik verb'i bunu güvenilir yapar.
+            using UnityWebRequest request = UnityWebRequest.Put(finalUrl, bodyBytes);
+            request.method          = "PATCH";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+            AddAuthHeaders(request);
+            request.SetRequestHeader("Prefer", "return=representation");
+
+            try
+            {
+                await SendRequestAsync(request);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[SupabaseClient] PATCH isteği başarısız: {ex.Message}");
+                return null;
+            }
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError(
+                    $"[SupabaseClient] Hata {request.responseCode}: {request.error}\n" +
+                    $"URL: {finalUrl}"
+                );
+                return null;
+            }
+
+            Debug.Log($"[SupabaseClient] PATCH başarılı. Response boş mu: " +
+                      $"{string.IsNullOrEmpty(request.downloadHandler.text)}");
+
+            return request.downloadHandler.text;
+        }
+
         // ──────────────────────────────────────────────────
         //  Yardımcı metodlar
         // ──────────────────────────────────────────────────

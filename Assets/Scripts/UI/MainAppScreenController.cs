@@ -514,8 +514,11 @@ namespace FishMuseum.UI
             if (_questionText != null)
                 _questionText.text = question.question_text ?? "Soru yüklenemedi.";
 
-            // Her soru açılışında şıkları rastgele sıraya koyup butonlara bağla
-            AssignShuffledOptions(question);
+            // Şıklar sabit sırada: A=GetOptionA, B=GetOptionB, C=GetOptionC, D=GetOptionD
+            SetOptionButton(_btnOptA, "a", question.GetOptionA());
+            SetOptionButton(_btnOptB, "b", question.GetOptionB());
+            SetOptionButton(_btnOptC, "c", question.GetOptionC());
+            SetOptionButton(_btnOptD, "d", question.GetOptionD());
 
             if (_questionFeedback != null)
             {
@@ -645,10 +648,11 @@ namespace FishMuseum.UI
             string correct = _currentQuestion.correct_option?.ToLower() ?? string.Empty;
             bool   isRight = chosen == correct;
 
-            // Tüm şıkları kilitle ve renk ver (her butonun gerçek DB key'iyle)
-            Button[] optionButtons = { _btnOptA, _btnOptB, _btnOptC, _btnOptD };
-            for (int i = 0; i < optionButtons.Length; i++)
-                MarkOption(optionButtons[i], _buttonKeys[i], chosen, correct);
+            // Tüm şıkları kilitle ve renk ver (sabit a/b/c/d eşlemesi)
+            MarkOption(_btnOptA, "a", chosen, correct);
+            MarkOption(_btnOptB, "b", chosen, correct);
+            MarkOption(_btnOptC, "c", chosen, correct);
+            MarkOption(_btnOptD, "d", chosen, correct);
 
             // Cevabı GameSession quiz sayaçlarına/puanına kaydet
             if (GameSession.Instance != null)
@@ -701,7 +705,7 @@ namespace FishMuseum.UI
                 }
                 else
                 {
-                    _questionFeedback.text = $"Yanlış! Doğru cevap: {GetDisplayLetterForKey(correct)}";
+                    _questionFeedback.text = $"Yanlış! Doğru cevap: {correct.ToUpper()}";
                     _questionFeedback.AddToClassList("feedback-wrong");
                 }
             }
