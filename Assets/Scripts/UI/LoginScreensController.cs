@@ -13,11 +13,14 @@ namespace FishMuseum.UI
         [SerializeField] private GameObject mainAppUIObject; // Yeni ana ekran objemiz
         [SerializeField] private SceneLoader sceneLoader;
         [SerializeField] private string      tableEndpoint = "classes";
+        [SerializeField] private string teacherMasterPin = "1234";
 
         // ── Ekran grupları ────────────────────────────────────────────
         private VisualElement _mainMenu;
         private VisualElement _classSelection;
         private VisualElement _pinRegistration;
+        private VisualElement _teacherPin;
+        private VisualElement _teacherPanel;
 
         // ── Sınıf listesi ─────────────────────────────────────────────
         private ScrollView _classListScroll;
@@ -30,11 +33,17 @@ namespace FishMuseum.UI
         private Label     _pinFeedback;
 
         // ── Sabit butonlar ────────────────────────────────────────────
-        private Button _btnJoinGroup;
-        private Button _btnJoinGuest;
+        private Button _btnRoleStudent;
+        private Button _btnRoleTeacher;
         private Button _btnConfirm;
         private Button _btnBackToMenu;
         private Button _btnBackToClass;
+
+        private TextField _teacherPinInput;
+        private Label     _teacherPinFeedback;
+        private Button    _btnTeacherConfirm;
+        private Button    _btnTeacherBack;
+        private Button    _btnTeacherPanelBack;
 
         // ── Durum ─────────────────────────────────────────────────────
         public ClassData CurrentClass { get; private set; }
@@ -68,6 +77,8 @@ namespace FishMuseum.UI
             _mainMenu        = Require<VisualElement>(root, "main-menu");
             _classSelection  = Require<VisualElement>(root, "class-selection");
             _pinRegistration = Require<VisualElement>(root, "pin-registration");
+            _teacherPin   = Require<VisualElement>(root, "teacher-pin");
+            _teacherPanel = Require<VisualElement>(root, "teacher-panel");
 
             // ── Sınıf listesi ─────────────────────────────────────────
             _classListScroll = Require<ScrollView>(root, "class-list-scroll");
@@ -80,24 +91,35 @@ namespace FishMuseum.UI
             _pinFeedback        = Require<Label>(root, "pin-feedback");
 
             // ── Sabit butonlar ────────────────────────────────────────
-            _btnJoinGroup   = Require<Button>(root, "btn-join-group");
-            _btnJoinGuest   = Require<Button>(root, "btn-join-guest");
+            _btnRoleStudent = Require<Button>(root, "btn-role-student");
+            _btnRoleTeacher = Require<Button>(root, "btn-role-teacher");
             _btnConfirm     = Require<Button>(root, "btn-confirm");
             _btnBackToMenu  = Require<Button>(root, "btn-back-to-menu");
             _btnBackToClass = Require<Button>(root, "btn-back-to-class");
 
+            _teacherPinInput     = Require<TextField>(root, "teacher-pin-input");
+            _teacherPinFeedback  = Require<Label>(root, "teacher-pin-feedback");
+            _btnTeacherConfirm   = Require<Button>(root, "btn-teacher-confirm");
+            _btnTeacherBack      = Require<Button>(root, "btn-teacher-back");
+            _btnTeacherPanelBack = Require<Button>(root, "btn-teacher-panel-back");
+
             // ── Event bağlantıları ────────────────────────────────────
-            if (_btnJoinGroup != null)
-                _btnJoinGroup.clicked += () =>
+            if (_btnRoleStudent != null)
+                _btnRoleStudent.clicked += () =>
                 {
-                    Debug.Log("[LoginScreensController] btn-join-group tıklandı.");
+                    Debug.Log("[LoginScreensController] Öğrenci seçildi.");
                     _ = LoadActiveClassesAsync();
                 };
 
-            if (_btnJoinGuest   != null) _btnJoinGuest.clicked   += OnJoinAsGuest;
+            if (_btnRoleTeacher != null) _btnRoleTeacher.clicked += ShowTeacherPin;
+
             if (_btnConfirm     != null) _btnConfirm.clicked     += OnConfirmPin;
             if (_btnBackToMenu  != null) _btnBackToMenu.clicked  += ShowMainMenu;
             if (_btnBackToClass != null) _btnBackToClass.clicked += ShowClassSelection;
+
+            if (_btnTeacherConfirm   != null) _btnTeacherConfirm.clicked   += OnTeacherConfirm;
+            if (_btnTeacherBack      != null) _btnTeacherBack.clicked      += ShowMainMenu;
+            if (_btnTeacherPanelBack != null) _btnTeacherPanelBack.clicked += ShowMainMenu;
 
             Debug.Log("[LoginScreensController] Start tamamlandı — tüm event'ler bağlandı.");
 
@@ -113,6 +135,8 @@ namespace FishMuseum.UI
             _mainMenu?.AddToClassList("hidden");
             _classSelection?.AddToClassList("hidden");
             _pinRegistration?.AddToClassList("hidden");
+            _teacherPin?.AddToClassList("hidden");
+            _teacherPanel?.AddToClassList("hidden");
             active?.RemoveFromClassList("hidden");
         }
 
@@ -136,6 +160,37 @@ namespace FishMuseum.UI
             if (_pinFeedback   != null) _pinFeedback.text    = string.Empty;
 
             ShowScreen(_pinRegistration);
+        }
+
+        // ── Öğretmen akışı ────────────────────────────────────────────
+        private void ShowTeacherPin()
+        {
+            if (_teacherPinInput    != null) _teacherPinInput.value   = string.Empty;
+            if (_teacherPinFeedback != null) _teacherPinFeedback.text = string.Empty;
+            ShowScreen(_teacherPin);
+        }
+
+        private void ShowTeacherPanel() => ShowScreen(_teacherPanel);
+
+        private void OnTeacherConfirm()
+        {
+            string pin = _teacherPinInput?.value.Trim() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(pin))
+            {
+                if (_teacherPinFeedback != null) _teacherPinFeedback.text = "Lütfen PIN kodunu girin.";
+                return;
+            }
+
+            if (pin != teacherMasterPin)
+            {
+                if (_teacherPinFeedback != null) _teacherPinFeedback.text = "PIN hatalı. Lütfen tekrar deneyin.";
+                if (_teacherPinInput    != null) _teacherPinInput.value   = string.Empty;
+                return;
+            }
+
+            Debug.Log("[LoginScreensController] Öğretmen girişi başarılı.");
+            ShowTeacherPanel();
         }
 
         // ══════════════════════════════════════════════════════════════

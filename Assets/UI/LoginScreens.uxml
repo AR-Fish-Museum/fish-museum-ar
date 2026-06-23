@@ -2,18 +2,14 @@
     <ui:Style src="LoginScreens.uss" />
     <ui:VisualElement name="root" class="screen-root">
 
-        <!-- ═══════════════════════════════════════════
-             Grup 1 · Ana Menü
-        ════════════════════════════════════════════ -->
+        <!-- Grup 1 · Ana Menü -->
         <ui:VisualElement name="main-menu" class="screen">
             <ui:Label text="AR Balık Müzesi" class="title" />
-            <ui:Button name="btn-join-group" text="Gruba Katıl"          class="primary-btn" />
-            <ui:Button name="btn-join-guest" text="Misafir Olarak Katıl" class="secondary-btn guest-btn" />
+            <ui:Button name="btn-role-student" text="Öğrenci"  class="primary-btn" />
+            <ui:Button name="btn-role-teacher" text="Öğretmen" class="secondary-btn" />
         </ui:VisualElement>
 
-        <!-- ═══════════════════════════════════════════
-             Grup 2 · Sınıf Listesi
-        ════════════════════════════════════════════ -->
+        <!-- Grup 2 · Sınıf Listesi -->
         <ui:VisualElement name="class-selection" class="screen hidden">
             <ui:Label text="Sınıfını Seç" class="title" />
             <ui:ScrollView name="class-list-scroll" class="class-scroll" />
@@ -21,17 +17,32 @@
             <ui:Button name="btn-back-to-menu" text="Geri Dön" class="link-btn" />
         </ui:VisualElement>
 
-        <!-- ═══════════════════════════════════════════
-             Grup 3 · Öğrenci Girişi (PIN)
-        ════════════════════════════════════════════ -->
+        <!-- Grup 3 · Öğrenci Girişi (PIN) -->
         <ui:VisualElement name="pin-registration" class="screen hidden">
             <ui:Label text="Öğrenci Girişi" class="title" />
             <ui:Label name="selected-class-label" class="selected-class" />
             <ui:TextField name="full-name-input" label="Ad Soyad" class="form-field" />
             <ui:TextField name="pin-input" label="PIN" password="true" class="form-field" />
-            <ui:Button name="btn-confirm" text="Giriş Yap"         class="primary-btn" />
+            <ui:Button name="btn-confirm" text="Giriş Yap" class="primary-btn" />
             <ui:Label name="pin-feedback" class="feedback" />
             <ui:Button name="btn-back-to-class" text="Başka Sınıf Seç" class="link-btn" />
+        </ui:VisualElement>
+
+        <!-- Grup 4 · Öğretmen Girişi (PIN) -->
+        <ui:VisualElement name="teacher-pin" class="screen hidden">
+            <ui:Label text="Öğretmen Girişi" class="title" />
+            <ui:TextField name="teacher-pin-input" label="PIN" password="true" class="form-field" />
+            <ui:Button name="btn-teacher-confirm" text="Giriş Yap" class="primary-btn" />
+            <ui:Label name="teacher-pin-feedback" class="feedback" />
+            <ui:Button name="btn-teacher-back" text="Geri" class="link-btn" />
+        </ui:VisualElement>
+
+        <!-- Grup 5 · Öğretmen Paneli (placeholder) -->
+        <ui:VisualElement name="teacher-panel" class="screen hidden">
+            <ui:Label text="Öğretmen Paneli" class="title" />
+            <ui:Label text="Sınıf ve soru oluşturma paneli bir sonraki adımda eklenecek."
+                      class="panel-info" />
+            <ui:Button name="btn-teacher-panel-back" text="Geri Dön" class="link-btn" />
         </ui:VisualElement>
 
     </ui:VisualElement>

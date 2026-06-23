@@ -190,3 +190,11 @@
     border-color: rgb(95, 220, 240);
     background-color: rgba(26, 56, 80, 0.95);
 }
+
+.panel-info {
+    font-size: 32px;
+    color: rgb(190, 225, 245);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 24px;
+}

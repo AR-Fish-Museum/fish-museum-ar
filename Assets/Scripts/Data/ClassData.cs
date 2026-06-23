@@ -24,6 +24,9 @@ namespace FishMuseum.Data
         /// <summary>Öğrenci giriş PIN kodu.</summary>
         public string student_pin;
 
+        /// <summary>Öğretmen giriş PIN kodu (sınıfa özel).</summary>
+        public string teacher_pin;
+
         /// <summary>Oluşturulma zamanı (ISO 8601 string olarak gelir).</summary>
         public string created_at;
     }

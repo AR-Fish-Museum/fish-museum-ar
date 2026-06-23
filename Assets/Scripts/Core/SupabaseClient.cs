@@ -155,6 +155,9 @@ namespace FishMuseum.Core
                 return null;
             }
 
+            Debug.Log($"[SupabaseClient] POST başarılı. Response boş mu: " +
+                      $"{string.IsNullOrEmpty(request.downloadHandler.text)}");
+
             return request.downloadHandler.text;
         }
 
