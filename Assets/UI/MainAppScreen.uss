@@ -507,3 +507,55 @@
 
 .quiz-result-view-fish-btn:hover  { background-color: rgb(0, 195, 185); }
 .quiz-result-view-fish-btn:active { background-color: rgb(0, 140, 132); }
+
+.fish-select-title {
+    font-size: 40px;
+    -unity-font-style: bold;
+    color: rgb(150, 235, 255);
+    -unity-text-align: middle-center;
+    margin-top: 28px;
+    margin-bottom: 16px;
+}
+
+.fish-card {
+    flex-direction: column;
+    background-color: rgba(20, 60, 84, 0.9);
+    border-radius: 24px;
+    border-width: 2px;
+    border-color: rgba(120, 210, 235, 0.45);
+    padding: 24px;
+    margin-bottom: 18px;
+}
+
+.fish-card-image {
+    height: 220px;
+    margin-bottom: 16px;
+}
+
+.fish-card-name {
+    font-size: 36px;
+    -unity-font-style: bold;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.fish-card-desc {
+    font-size: 26px;
+    color: rgb(190, 225, 245);
+    white-space: normal;
+    margin-bottom: 16px;
+}
+
+.fish-card-btn {
+    min-height: 90px;
+    border-radius: 18px;
+    border-width: 2px;
+    border-color: rgba(170, 255, 240, 0.9);
+    background-color: rgb(0, 170, 160);
+    color: white;
+    font-size: 32px;
+    -unity-font-style: bold;
+}
+
+.fish-card-btn:hover  { background-color: rgb(0, 195, 185); }
+.fish-card-btn:active { background-color: rgb(0, 140, 132); }

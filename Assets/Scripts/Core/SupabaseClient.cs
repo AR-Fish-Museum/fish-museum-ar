@@ -152,6 +152,11 @@ namespace FishMuseum.Core
                     $"[SupabaseClient] Hata {request.responseCode}: {request.error}\n" +
                     $"URL: {finalUrl}"
                 );
+
+                string errorBody = request.downloadHandler != null ? request.downloadHandler.text : null;
+                if (!string.IsNullOrEmpty(errorBody))
+                    Debug.LogError($"[SupabaseClient] Hata Body: {errorBody}");
+
                 return null;
             }
 

@@ -39,6 +39,20 @@ public class RewardFishSpawner : MonoBehaviour
     [SerializeField] private string rewardLayerName = "RewardFish";
     [SerializeField] private int overlayCameraDepth = 10;
 
+    [Header("Reward Mode — World Aquarium")]
+    [SerializeField] private bool useWorldAquariumInRewardMode = true;
+    [SerializeField] private float aquariumDistance = 1.8f;
+    [SerializeField] private float aquariumVerticalOffset = -0.05f;
+    [SerializeField] private Vector3 aquariumSize = new Vector3(2.5f, 1.2f, 1.5f);
+    [SerializeField] private float swimMinSpeed = 0.15f;
+    [SerializeField] private float swimMaxSpeed = 0.35f;
+    [SerializeField] private float swimTurnSpeed = 2.5f;
+    [SerializeField] private Vector3 modelRotationOffsetEuler = new Vector3(0f, 180f, 0f);
+
+    [Header("Reward Mode — Fish Rotation Offsets")]
+    [SerializeField] private Vector3 sharkRotationOffsetEuler = new Vector3(0f, 0f, 0f);
+    [SerializeField] private Vector3 clownfishRotationOffsetEuler = new Vector3(0f, -90f, 0f);
+
     [Header("Debug")]
     [SerializeField] private bool spawnDebugCubeInsteadOfFish = false;
 
@@ -142,6 +156,7 @@ public class RewardFishSpawner : MonoBehaviour
     // ── Overlay camera ile yerleştirme (URP camera stacking) ──────
     private void PlaceWithOverlayCamera(GameObject obj, Camera mainCam, float objScale)
     {
+        Vector3 rotationOffset = GetRotationOffsetForSelectedFish();
         int rewardLayer = LayerMask.NameToLayer(rewardLayerName);
         if (rewardLayer == -1)
         {
@@ -154,15 +169,63 @@ public class RewardFishSpawner : MonoBehaviour
         Debug.Log("[RewardFishSpawner] Overlay camera mode aktif.");
         Debug.Log($"[RewardFishSpawner] Reward layer index: {rewardLayer}");
 
-        Camera overlay = EnsureOverlayCamera(mainCam, rewardLayer);
+        EnsureOverlayCamera(mainCam, rewardLayer);
+        SetLayerRecursively(obj, rewardLayer);
 
-        obj.transform.SetParent(overlay.transform, false);
+        if (useWorldAquariumInRewardMode)
+        {
+            PlaceInWorldAquarium(obj, mainCam, objScale, rotationOffset);
+            return;
+        }
+
+        obj.transform.SetParent(_overlayCamera.transform, false);
         obj.transform.localPosition = cameraLocalPosition;
-        obj.transform.localRotation = Quaternion.Euler(cameraLocalEulerAngles);
+        obj.transform.localRotation = Quaternion.Euler(rotationOffset);
         obj.transform.localScale = Vector3.one * objScale;
 
-        SetLayerRecursively(obj, rewardLayer);
-        Debug.Log("[RewardFishSpawner] Debug cube RewardFish layer'a alındı.");
+        Debug.Log("[RewardFishSpawner] Balık overlay camera child olarak yerleştirildi.");
+    }
+
+    private void PlaceInWorldAquarium(GameObject obj, Camera mainCam, float objScale, Vector3 rotationOffset)
+    {
+        Vector3 center =
+            mainCam.transform.position +
+            mainCam.transform.forward * aquariumDistance;
+
+        center += Vector3.up * aquariumVerticalOffset;
+
+        Quaternion aquariumRotation = Quaternion.Euler(
+            0f,
+            mainCam.transform.eulerAngles.y,
+            0f
+        );
+
+        GameObject aquariumRoot = new GameObject("RewardAquariumVolume");
+        aquariumRoot.transform.position = center;
+        aquariumRoot.transform.rotation = aquariumRotation;
+
+        obj.transform.SetParent(aquariumRoot.transform, false);
+        obj.transform.localPosition = Vector3.zero;
+        obj.transform.localRotation = Quaternion.Euler(rotationOffset);
+        obj.transform.localScale = Vector3.one * objScale;
+
+        RewardFishSwimmer swimmer = obj.GetComponent<RewardFishSwimmer>();
+        if (swimmer == null)
+            swimmer = obj.AddComponent<RewardFishSwimmer>();
+
+        swimmer.Configure(
+            aquariumRoot.transform,
+            aquariumSize,
+            swimMinSpeed,
+            swimMaxSpeed,
+            swimTurnSpeed,
+            rotationOffset
+        );
+
+        Debug.Log(
+            $"[RewardFishSpawner] Balık world aquarium içinde spawn edildi. " +
+            $"Center: {center}, Size: {aquariumSize}"
+        );
     }
 
     private Camera EnsureOverlayCamera(Camera mainCam, int rewardLayer)
@@ -270,5 +333,18 @@ public class RewardFishSpawner : MonoBehaviour
             cam.enabled = false;
             Debug.Log($"[RewardFishSpawner] Kamera devre dışı bırakıldı: {cam.name} (tag: {cam.tag})");
         }
+    }
+
+    private Vector3 GetRotationOffsetForSelectedFish()
+    {
+        string selectedFishId = SelectedFishSession.SelectedFishId;
+
+        if (selectedFishId == "reward_shark")
+            return sharkRotationOffsetEuler;
+
+        if (selectedFishId == "reward_clownfish")
+            return clownfishRotationOffsetEuler;
+
+        return modelRotationOffsetEuler;
     }
 }

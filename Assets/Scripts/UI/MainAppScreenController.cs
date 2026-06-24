@@ -16,6 +16,9 @@ namespace FishMuseum.UI
         [SerializeField] private GameObject rewardSharkPrefab;
         [SerializeField] private int        sharkUnlockCorrectCount = 4;
 
+        [Header("Balık Kartları (Inspector'dan genişletilebilir)")]
+        [SerializeField] private List<RewardFishCardData> rewardFishCards = new List<RewardFishCardData>();
+
         [Header("Sahne Geçişi")]
         [SerializeField] private SceneLoader sceneLoader;
 
@@ -828,6 +831,27 @@ namespace FishMuseum.UI
             card.Add(wrongLabel);
             card.Add(answeredLabel);
 
+            // ── Balığını Seç — tüm balık kartları (puan kısıtı YOK) ──
+            var selectTitle = new Label { text = "Balığını Seç" };
+            selectTitle.AddToClassList("fish-select-title");
+            card.Add(selectTitle);
+
+            var fishCards = GetEffectiveFishCards();
+            if (fishCards.Count == 0)
+            {
+                var noFish = new Label { text = "Henüz balık eklenmemiş." };
+                noFish.AddToClassList("quiz-result-stat");
+                card.Add(noFish);
+            }
+            else
+            {
+                foreach (var data in fishCards)
+                {
+                    if (data == null || data.prefab == null) continue; // prefab yoksa kart gösterilmez
+                    card.Add(BuildFishCard(data));
+                }
+            }
+
             // Baştan başla — sadece soruları yeniden başlatır (puan sıfırlanmaz)
             var restartBtn = new Button { text = "Quiz'e Baştan Başla" };
             restartBtn.AddToClassList("quiz-result-restart-btn");
@@ -851,12 +875,6 @@ namespace FishMuseum.UI
                 ShowQuestionOverlay(_classQuestions[0]);
             };
             card.Add(restartBtn);
-
-            // Balığımı Gör — quiz performansına göre ödül balığı + AR sahnesi
-            var viewFishBtn = new Button { text = "Balığımı Gör 🐟" };
-            viewFishBtn.AddToClassList("quiz-result-view-fish-btn");
-            viewFishBtn.clicked += OnViewRewardFishClicked;
-            card.Add(viewFishBtn);
 
             // Sıralamayı Gör — aynı sınıftaki öğrenci sıralaması
             var leaderboardBtn = new Button { text = "Sıralamayı Gör" };
@@ -921,6 +939,91 @@ namespace FishMuseum.UI
             {
                 Debug.LogError("[MainAppScreenController] sceneLoader null — " +
                                "Inspector'dan SceneLoader referansı bağlanmamış. AR sahnesine geçilemedi.");
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  Balık kartları — tüm balıklar (puan kısıtı yok)
+        // ══════════════════════════════════════════════════════════
+
+        private List<RewardFishCardData> GetEffectiveFishCards()
+        {
+            if (rewardFishCards != null && rewardFishCards.Count > 0)
+                return rewardFishCards;
+
+            // Geriye dönük uyumluluk: eski iki prefab alanından varsayılan kartlar
+            var fallback = new List<RewardFishCardData>();
+            if (rewardClownfishPrefab != null)
+                fallback.Add(new RewardFishCardData
+                {
+                    fishId      = "reward_clownfish",
+                    fishName    = "Palyaço Balığı",
+                    description = "Sevimli ve renkli bir resif balığı.",
+                    prefab      = rewardClownfishPrefab
+                });
+            if (rewardSharkPrefab != null)
+                fallback.Add(new RewardFishCardData
+                {
+                    fishId      = "reward_shark",
+                    fishName    = "Büyük Beyaz Köpekbalığı",
+                    description = "Okyanusun güçlü avcısı.",
+                    prefab      = rewardSharkPrefab
+                });
+            return fallback;
+        }
+
+        private VisualElement BuildFishCard(RewardFishCardData data)
+        {
+            var fishCard = new VisualElement();
+            fishCard.AddToClassList("fish-card");
+
+            if (data.previewImage != null)
+            {
+                var img = new Image { image = data.previewImage, scaleMode = ScaleMode.ScaleToFit };
+                img.AddToClassList("fish-card-image");
+                fishCard.Add(img);
+            }
+
+            var nameLabel = new Label { text = data.fishName ?? "(isimsiz balık)" };
+            nameLabel.AddToClassList("fish-card-name");
+            fishCard.Add(nameLabel);
+
+            if (!string.IsNullOrEmpty(data.description))
+            {
+                var desc = new Label { text = data.description };
+                desc.AddToClassList("fish-card-desc");
+                fishCard.Add(desc);
+            }
+
+            var selectBtn = new Button { text = "AR'da Gör" };
+            selectBtn.AddToClassList("fish-card-btn");
+            var captured = data;
+            selectBtn.clicked += () => OnRewardFishCardSelected(captured);
+            fishCard.Add(selectBtn);
+
+            return fishCard;
+        }
+
+        private void OnRewardFishCardSelected(RewardFishCardData data)
+        {
+            if (data == null) return;
+
+            if (data.prefab == null)
+            {
+                Debug.LogError($"[MainAppScreenController] Balık prefab'ı null (id: {data.fishId}). Seçim iptal.");
+                return;
+            }
+
+            Debug.Log($"[MainAppScreenController] Balık kartı seçildi: {data.fishName} (id: {data.fishId})");
+            SelectedFishSession.SelectFish(data.fishId, data.fishName, data.prefab);
+
+            if (sceneLoader != null)
+            {
+                sceneLoader.LoadRealARScene();
+            }
+            else
+            {
+                Debug.LogError("[MainAppScreenController] sceneLoader null — AR sahnesine geçilemedi.");
             }
         }
 
@@ -1066,6 +1169,16 @@ namespace FishMuseum.UI
             public string user_id;
             public bool is_correct;
             public string chosen_option;
+        }
+
+        [System.Serializable]
+        private class RewardFishCardData
+        {
+            public string     fishId;
+            public string     fishName;
+            public string     description;
+            public GameObject prefab;
+            public Texture2D  previewImage;
         }
     }
 }

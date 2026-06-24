@@ -892,12 +892,22 @@ MonoBehaviour:
   clownfishScale: 1
   sharkScale: 0.3
   defaultRewardScale: 0.1
-  parentToCameraInRewardMode: 1
+  parentToCameraInRewardMode: 0
   cameraLocalPosition: {x: 0, y: -0.1, z: 1.5}
   cameraLocalEulerAngles: {x: 0, y: 180, z: 0}
   useOverlayCameraInRewardMode: 1
   rewardLayerName: RewardFish
   overlayCameraDepth: 10
+  useWorldAquariumInRewardMode: 1
+  aquariumDistance: 1.8
+  aquariumVerticalOffset: -0.05
+  aquariumSize: {x: 2.5, y: 1.2, z: 1.5}
+  swimMinSpeed: 0.15
+  swimMaxSpeed: 0.35
+  swimTurnSpeed: 2.5
+  modelRotationOffsetEuler: {x: 0, y: 180, z: 0}
+  sharkRotationOffsetEuler: {x: 0, y: 0, z: 0}
+  clownfishRotationOffsetEuler: {x: 0, y: 90, z: 0}
   spawnDebugCubeInsteadOfFish: 0
 --- !u!4 &1057016146
 Transform:
@@ -1034,6 +1044,55 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1560853607
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1560853609}
+  - component: {fileID: 1560853608}
+  m_Layer: 0
+  m_Name: ARBackButtonController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1560853608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1560853607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98055df8bc941574b86e203c286ec2ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ARBackButtonController
+  fallbackSceneName: LoginScene
+  clearSelectedFishOnBack: 1
+  buttonText: "\u2190 Geri"
+  buttonSize: {x: 180, y: 64}
+  topLeftMargin: {x: 32, y: 32}
+--- !u!4 &1560853609
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1560853607}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -19.74491, y: 0.48025, z: -0.9506}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1271,3 +1330,4 @@ SceneRoots:
   - {fileID: 1388371437}
   - {fileID: 1255131209}
   - {fileID: 1057016146}
+  - {fileID: 1560853609}

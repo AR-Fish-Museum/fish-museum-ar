@@ -372,6 +372,10 @@ namespace FishMuseum.UI
                 student_pin = "1111",
                 is_archived = false
             };
+            Debug.Log($"[TeacherPanel] Yeni sınıf oluşturma payload: " +
+                      $"class_name={cPayload.class_name}, student_pin={cPayload.student_pin}, " +
+                      $"teacher_pin={cPayload.teacher_pin}, is_archived={cPayload.is_archived}");
+
             string cJson = JsonUtility.ToJson(cPayload);
 
             string cResp;
