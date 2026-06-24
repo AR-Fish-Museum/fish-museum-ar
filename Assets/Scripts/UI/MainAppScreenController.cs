@@ -14,7 +14,7 @@ namespace FishMuseum.UI
         [Header("Ödül Balığı")]
         [SerializeField] private GameObject rewardClownfishPrefab;
         [SerializeField] private GameObject rewardSharkPrefab;
-        [SerializeField] private int        sharkUnlockCorrectCount = 4;
+        [SerializeField] private int sharkUnlockCorrectCount = 4;
 
         [Header("Balık Kartları (Inspector'dan genişletilebilir)")]
         [SerializeField] private List<RewardFishCardData> rewardFishCards = new List<RewardFishCardData>();
@@ -24,14 +24,14 @@ namespace FishMuseum.UI
 
 
         // ── Sekme sabitleri ───────────────────────────────────────
-        private const string TAB_CREATURES   = "Canlılar";
+        private const string TAB_CREATURES = "Canlılar";
         private const string TAB_LEADERBOARD = "Sıralama";
-        private const string TAB_ABOUT       = "Müze";
-        private const string CSS_ACTIVE      = "nav-btn-active";
-        private const string CSS_HIDDEN      = "hidden";
+        private const string TAB_ABOUT = "Müze";
+        private const string CSS_ACTIVE = "nav-btn-active";
+        private const string CSS_HIDDEN = "hidden";
 
         // ── Liste alanı ───────────────────────────────────────────
-        private Label      _currentTabLabel;
+        private Label _currentTabLabel;
         private ScrollView _creaturesScroll;
 
         // ── Navigasyon butonları ──────────────────────────────────
@@ -41,35 +41,36 @@ namespace FishMuseum.UI
 
         // ── Canlı detay overlay ───────────────────────────────────
         private VisualElement _detailOverlay;
-        private Label         _detailCreatureName;
-        private Label         _detailCreatureDesc;
-        private Label         _detailCreatureWeight;
-        private Button        _btnBackToList;
-        private Button        _btnFeedCreature;
+        private Label _detailCreatureName;
+        private Label _detailCreatureDesc;
+        private Label _detailCreatureWeight;
+        private Button _btnBackToList;
+        private Button _btnFeedCreature;
 
         // ── Soru overlay ──────────────────────────────────────────
         private VisualElement _questionOverlay;
-        private Label         _questionText;
-        private Label         _questionFeedback;
-        private Button        _btnOptA;
-        private Button        _btnOptB;
-        private Button        _btnOptC;
-        private Button        _btnOptD;
-        private Button        _btnCloseQuestion;
-        private Label         _quizStatusLabel;
+        private Label _questionText;
+        private Label _questionFeedback;
+        private Button _btnOptA;
+        private Button _btnOptB;
+        private Button _btnOptC;
+        private Button _btnOptD;
+        private Button _btnCloseQuestion;
+        private Label _quizStatusLabel;
 
         // ── Durum ─────────────────────────────────────────────────
-        private string       _currentSelectedCreatureId;
+        private string _currentSelectedCreatureId;
         private QuestionData _currentQuestion;
-        private bool         _initialized;
+        private bool _initialized;
+        private bool _showQuizResultAfterQuestionsLoad;
 
         // ── Sınıf soruları (quiz akışı) ───────────────────────────
         private List<QuestionData> _classQuestions;
-        private int                _currentQuestionIndex;
+        private int _currentQuestionIndex;
 
         // ── Şık karıştırma: fiziksel buton (A/B/C/D konumu) -> DB key (a/b/c/d) ──
-        private readonly string[]        _buttonKeys      = new string[4];
-        private readonly System.Action[] _optionHandlers  = new System.Action[4];
+        private readonly string[] _buttonKeys = new string[4];
+        private readonly System.Action[] _optionHandlers = new System.Action[4];
         private static readonly string[] OptionDisplayLetters = { "A", "B", "C", "D" };
 
         // ══════════════════════════════════════════════════════════
@@ -97,35 +98,35 @@ namespace FishMuseum.UI
             _currentTabLabel = root.Q<Label>("current-tab-label");
             _creaturesScroll = Require<ScrollView>(root, "creatures-scroll-view");
 
-            _btnCreatures   = root.Q<Button>("btn-tab-creatures");
+            _btnCreatures = root.Q<Button>("btn-tab-creatures");
             _btnLeaderboard = root.Q<Button>("btn-tab-leaderboard");
-            _btnAbout       = root.Q<Button>("btn-tab-about");
+            _btnAbout = root.Q<Button>("btn-tab-about");
 
-            _detailOverlay        = root.Q<VisualElement>("creature-detail-overlay");
-            _detailCreatureName   = root.Q<Label>("detail-creature-name");
-            _detailCreatureDesc   = root.Q<Label>("detail-creature-desc");
+            _detailOverlay = root.Q<VisualElement>("creature-detail-overlay");
+            _detailCreatureName = root.Q<Label>("detail-creature-name");
+            _detailCreatureDesc = root.Q<Label>("detail-creature-desc");
             _detailCreatureWeight = root.Q<Label>("detail-creature-weight");
-            _btnBackToList        = root.Q<Button>("btn-back-to-list");
-            _btnFeedCreature      = root.Q<Button>("btn-feed-creature");
+            _btnBackToList = root.Q<Button>("btn-back-to-list");
+            _btnFeedCreature = root.Q<Button>("btn-feed-creature");
 
-            _questionOverlay   = Require<VisualElement>(root, "question-overlay");
-            _questionText      = Require<Label>(root, "question-text");
-            _questionFeedback  = Require<Label>(root, "question-feedback");
-            _btnOptA           = Require<Button>(root, "btn-opt-a");
-            _btnOptB           = Require<Button>(root, "btn-opt-b");
-            _btnOptC           = Require<Button>(root, "btn-opt-c");
-            _btnOptD           = Require<Button>(root, "btn-opt-d");
-            _btnCloseQuestion  = Require<Button>(root, "btn-close-question");
+            _questionOverlay = Require<VisualElement>(root, "question-overlay");
+            _questionText = Require<Label>(root, "question-text");
+            _questionFeedback = Require<Label>(root, "question-feedback");
+            _btnOptA = Require<Button>(root, "btn-opt-a");
+            _btnOptB = Require<Button>(root, "btn-opt-b");
+            _btnOptC = Require<Button>(root, "btn-opt-c");
+            _btnOptD = Require<Button>(root, "btn-opt-d");
+            _btnCloseQuestion = Require<Button>(root, "btn-close-question");
 
             _quizStatusLabel = root.Q<Label>("QuizStatusLabel");
 
             // ── Event bağlantıları (bir kez bağlanır) ─────────────
-            if (_btnCreatures   != null) _btnCreatures.clicked   += () => SwitchTab(TAB_CREATURES);
+            if (_btnCreatures != null) _btnCreatures.clicked += () => SwitchTab(TAB_CREATURES);
             if (_btnLeaderboard != null) _btnLeaderboard.clicked += () => SwitchTab(TAB_LEADERBOARD);
-            if (_btnAbout       != null) _btnAbout.clicked       += () => SwitchTab(TAB_ABOUT);
+            if (_btnAbout != null) _btnAbout.clicked += () => SwitchTab(TAB_ABOUT);
 
-            if (_btnBackToList    != null) _btnBackToList.clicked    += HideCreatureDetail;
-            if (_btnFeedCreature  != null) _btnFeedCreature.clicked  += () => _ = OnFeedCreature();
+            if (_btnBackToList != null) _btnBackToList.clicked += HideCreatureDetail;
+            if (_btnFeedCreature != null) _btnFeedCreature.clicked += () => _ = OnFeedCreature();
             if (_btnCloseQuestion != null) _btnCloseQuestion.clicked += OnQuestionContinueClicked;
 
             _initialized = true;
@@ -133,6 +134,11 @@ namespace FishMuseum.UI
 
             // İlk ekrana git
             ResetToInitialState();
+
+            _showQuizResultAfterQuestionsLoad =
+                GameSession.Instance != null &&
+                GameSession.Instance.ConsumeShowQuizResultOnReturn();
+
             _ = LoadClassQuestionsAsync();
         }
 
@@ -149,6 +155,11 @@ namespace FishMuseum.UI
 
             // Yeniden açılınca temiz duruma getir ve soruları tazele
             ResetToInitialState();
+
+            _showQuizResultAfterQuestionsLoad =
+                GameSession.Instance != null &&
+                GameSession.Instance.ConsumeShowQuizResultOnReturn();
+
             _ = LoadClassQuestionsAsync();
         }
 
@@ -165,7 +176,7 @@ namespace FishMuseum.UI
 
             // Durum değişkenlerini temizle
             _currentSelectedCreatureId = null;
-            _currentQuestion           = null;
+            _currentQuestion = null;
 
             // Nav butonlarını sıfırla, Canlılar aktif
             _btnCreatures?.RemoveFromClassList(CSS_ACTIVE);
@@ -239,7 +250,7 @@ namespace FishMuseum.UI
 
             _creaturesScroll.Clear();
             _creaturesScroll.style.flexGrow = 1;
-            _creaturesScroll.style.width    = new StyleLength(StyleKeyword.Auto);
+            _creaturesScroll.style.width = new StyleLength(StyleKeyword.Auto);
 
             string json;
             try
@@ -368,13 +379,20 @@ namespace FishMuseum.UI
             }
 
             // ── Sorular var → quiz akışını başlat ─────────────────
-            _classQuestions       = result.items;
+            _classQuestions = result.items;
             _currentQuestionIndex = 0;
 
             if (_currentTabLabel != null) _currentTabLabel.text = "Quiz";
 
             _creaturesScroll.Clear();
             _detailOverlay?.AddToClassList(CSS_HIDDEN);
+
+            if (_showQuizResultAfterQuestionsLoad)
+            {
+                _showQuizResultAfterQuestionsLoad = false;
+                ShowQuizResult();
+                return;
+            }
 
             ShowQuestionOverlay(_classQuestions[0]);
         }
@@ -417,8 +435,8 @@ namespace FishMuseum.UI
 
             _currentSelectedCreatureId = creature.id;
 
-            if (_detailCreatureName   != null) _detailCreatureName.text   = creature.name ?? "(isimsiz)";
-            if (_detailCreatureDesc   != null) _detailCreatureDesc.text   = creature.description ?? "Açıklama bulunamadı.";
+            if (_detailCreatureName != null) _detailCreatureName.text = creature.name ?? "(isimsiz)";
+            if (_detailCreatureDesc != null) _detailCreatureDesc.text = creature.description ?? "Açıklama bulunamadı.";
             if (_detailCreatureWeight != null) _detailCreatureWeight.text = $"Mevcut Ağırlık: {creature.base_weight} kg";
 
             // Soru overlay kapalı olmalı
@@ -582,8 +600,8 @@ namespace FishMuseum.UI
                 Button btn = buttons[i];
                 if (btn == null) continue;
 
-                string dbKey         = entries[i].key;   // bu fiziksel butonun DB anahtarı
-                string optionText    = entries[i].text;
+                string dbKey = entries[i].key;   // bu fiziksel butonun DB anahtarı
+                string optionText = entries[i].text;
                 string displayLetter = OptionDisplayLetters[i];
 
                 _buttonKeys[i] = dbKey;
@@ -649,7 +667,7 @@ namespace FishMuseum.UI
             if (_currentQuestion == null) return;
 
             string correct = _currentQuestion.correct_option?.ToLower() ?? string.Empty;
-            bool   isRight = chosen == correct;
+            bool isRight = chosen == correct;
 
             // Tüm şıkları kilitle ve renk ver (sabit a/b/c/d eşlemesi)
             MarkOption(_btnOptA, "a", chosen, correct);
@@ -728,8 +746,8 @@ namespace FishMuseum.UI
         {
             if (btn == null) return;
             btn.SetEnabled(false);
-            if (key == correct)       btn.AddToClassList("option-correct");
-            else if (key == chosen)   btn.AddToClassList("option-wrong");
+            if (key == correct) btn.AddToClassList("option-correct");
+            else if (key == chosen) btn.AddToClassList("option-wrong");
         }
 
         private void HideQuestionOverlay()
@@ -797,11 +815,15 @@ namespace FishMuseum.UI
                 _creaturesScroll.Clear();
             }
 
-            int score    = GameSession.Instance != null ? GameSession.Instance.Score                 : 0;
-            int correct  = GameSession.Instance != null ? GameSession.Instance.CorrectCount          : 0;
-            int wrong    = GameSession.Instance != null ? GameSession.Instance.WrongCount            : 0;
+            int score = GameSession.Instance != null ? GameSession.Instance.Score : 0;
+            int correct = GameSession.Instance != null ? GameSession.Instance.CorrectCount : 0;
+            int wrong = GameSession.Instance != null ? GameSession.Instance.WrongCount : 0;
             int answered = GameSession.Instance != null ? GameSession.Instance.AnsweredQuestionCount : 0;
-            int total    = _classQuestions != null ? _classQuestions.Count : 0;
+            int total = _classQuestions != null && _classQuestions.Count > 0
+                ? _classQuestions.Count
+                : (GameSession.Instance != null && GameSession.Instance.LastQuizTotalQuestionCount > 0
+                    ? GameSession.Instance.LastQuizTotalQuestionCount
+                    : answered);
 
             var card = new VisualElement();
             card.AddToClassList("quiz-result-card");
@@ -832,25 +854,28 @@ namespace FishMuseum.UI
             card.Add(answeredLabel);
 
             // ── Balığını Seç — tüm balık kartları (puan kısıtı YOK) ──
-            var selectTitle = new Label { text = "Balığını Seç" };
-            selectTitle.AddToClassList("fish-select-title");
-            card.Add(selectTitle);
+            var galleryBtn = new Button { text = "Balık Galerisine Git" };
+            galleryBtn.AddToClassList("quiz-result-gallery-btn");
+            galleryBtn.clicked += () =>
+            {
+                int totalQuestionCount = _classQuestions != null
+                    ? _classQuestions.Count
+                    : answered;
 
-            var fishCards = GetEffectiveFishCards();
-            if (fishCards.Count == 0)
-            {
-                var noFish = new Label { text = "Henüz balık eklenmemiş." };
-                noFish.AddToClassList("quiz-result-stat");
-                card.Add(noFish);
-            }
-            else
-            {
-                foreach (var data in fishCards)
+                GameSession.Instance?.SaveQuizResultState(totalQuestionCount);
+
+                if (sceneLoader != null)
                 {
-                    if (data == null || data.prefab == null) continue; // prefab yoksa kart gösterilmez
-                    card.Add(BuildFishCard(data));
+                    Debug.Log("[MainAppScreenController] Balık galerisine geçiliyor.");
+                    sceneLoader.LoadFishGalleryScene();
                 }
-            }
+                else
+                {
+                    Debug.LogError("[MainAppScreenController] sceneLoader null — Balık Galerisi sahnesine geçilemedi.");
+                }
+            };
+
+            card.Add(galleryBtn);
 
             // Baştan başla — sadece soruları yeniden başlatır (puan sıfırlanmaz)
             var restartBtn = new Button { text = "Quiz'e Baştan Başla" };
@@ -903,20 +928,20 @@ namespace FishMuseum.UI
             int correctCount = GameSession.Instance.CorrectCount;
 
             GameObject selectedPrefab;
-            string     fishId;
-            string     fishName;
+            string fishId;
+            string fishName;
 
             if (correctCount >= sharkUnlockCorrectCount)
             {
                 selectedPrefab = rewardSharkPrefab;
-                fishId         = "reward_shark";
-                fishName       = "Büyük Beyaz Köpekbalığı";
+                fishId = "reward_shark";
+                fishName = "Büyük Beyaz Köpekbalığı";
             }
             else
             {
                 selectedPrefab = rewardClownfishPrefab;
-                fishId         = "reward_clownfish";
-                fishName       = "Palyaço Balığı";
+                fishId = "reward_clownfish";
+                fishName = "Palyaço Balığı";
             }
 
             if (selectedPrefab == null)
@@ -956,18 +981,18 @@ namespace FishMuseum.UI
             if (rewardClownfishPrefab != null)
                 fallback.Add(new RewardFishCardData
                 {
-                    fishId      = "reward_clownfish",
-                    fishName    = "Palyaço Balığı",
+                    fishId = "reward_clownfish",
+                    fishName = "Palyaço Balığı",
                     description = "Sevimli ve renkli bir resif balığı.",
-                    prefab      = rewardClownfishPrefab
+                    prefab = rewardClownfishPrefab
                 });
             if (rewardSharkPrefab != null)
                 fallback.Add(new RewardFishCardData
                 {
-                    fishId      = "reward_shark",
-                    fishName    = "Büyük Beyaz Köpekbalığı",
+                    fishId = "reward_shark",
+                    fishName = "Büyük Beyaz Köpekbalığı",
                     description = "Okyanusun güçlü avcısı.",
-                    prefab      = rewardSharkPrefab
+                    prefab = rewardSharkPrefab
                 });
             return fallback;
         }
@@ -1174,11 +1199,11 @@ namespace FishMuseum.UI
         [System.Serializable]
         private class RewardFishCardData
         {
-            public string     fishId;
-            public string     fishName;
-            public string     description;
+            public string fishId;
+            public string fishName;
+            public string description;
             public GameObject prefab;
-            public Texture2D  previewImage;
+            public Texture2D previewImage;
         }
     }
 }

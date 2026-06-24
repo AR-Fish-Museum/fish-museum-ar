@@ -396,6 +396,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1179240210}
   m_CullTransparentMesh: 1
+--- !u!1 &1354638299
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1354638301}
+  - component: {fileID: 1354638300}
+  m_Layer: 0
+  m_Name: FishGalleryBackButtonController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1354638300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354638299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad6f4a6e399a0ca4481cf79c649e3e24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishGalleryBackButtonController
+  buttonText: "\u2190 Geri"
+  buttonSize: {x: 180, y: 64}
+  topLeftMargin: {x: 32, y: 32}
+--- !u!4 &1354638301
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354638299}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -19.74491, y: 0.48025, z: -0.9506}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1425409681
 GameObject:
   m_ObjectHideFlags: 0
@@ -592,7 +639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3beda396b3eaabc49af9d57cbbdc0e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishGalleryCardButton
-  fishId: shark
+  fishId: reward_shark
   fishName: "K\xF6pekbal\u0131\u011F\u0131"
   fishPrefab: {fileID: 1276205554959560, guid: 110b86501fff2414186f46873d54d1ea, type: 3}
   sceneLoader: {fileID: 1714366575}
@@ -969,6 +1016,8 @@ GameObject:
   - component: {fileID: 1640933447}
   - component: {fileID: 1640933449}
   - component: {fileID: 1640933448}
+  - component: {fileID: 1640933451}
+  - component: {fileID: 1640933450}
   m_Layer: 5
   m_Name: FishCard_02
   m_TagString: Untagged
@@ -1035,6 +1084,78 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1640933446}
   m_CullTransparentMesh: 1
+--- !u!114 &1640933450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640933446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3beda396b3eaabc49af9d57cbbdc0e4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishGalleryCardButton
+  fishId: reward_clownfish
+  fishName: "Palya\xE7o Bal\u0131\u011F\u0131"
+  fishPrefab: {fileID: 1260883131845032, guid: 704d7e9771f635d49b675a9e09b632ff, type: 3}
+  sceneLoader: {fileID: 1714366575}
+--- !u!114 &1640933451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640933446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1640933448}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1640933450}
+        m_TargetAssemblyTypeName: FishGalleryCardButton, Assembly-CSharp
+        m_MethodName: OnCardClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1696181332
 GameObject:
   m_ObjectHideFlags: 0
@@ -1487,3 +1608,4 @@ SceneRoots:
   - {fileID: 1425409685}
   - {fileID: 2000362867}
   - {fileID: 1714366576}
+  - {fileID: 1354638301}

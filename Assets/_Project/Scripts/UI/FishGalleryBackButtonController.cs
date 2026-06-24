@@ -1,15 +1,12 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class ARBackButtonController : MonoBehaviour
+public class FishGalleryBackButtonController : MonoBehaviour
 {
     [Header("Back Button")]
-    [SerializeField] private string fallbackSceneName = SceneLoader.LoginScene;
-    [SerializeField] private bool clearSelectedFishOnBack = true;
     [SerializeField] private string buttonText = "← Geri";
-
-    [Header("Layout")]
     [SerializeField] private Vector2 buttonSize = new Vector2(180f, 64f);
     [SerializeField] private Vector2 topLeftMargin = new Vector2(32f, 32f);
 
@@ -20,7 +17,7 @@ public class ARBackButtonController : MonoBehaviour
 
     private void CreateBackButton()
     {
-        GameObject canvasGo = new GameObject("ARBackButtonCanvas");
+        GameObject canvasGo = new GameObject("FishGalleryBackButtonCanvas");
         canvasGo.transform.SetParent(transform, false);
 
         Canvas canvas = canvasGo.AddComponent<Canvas>();
@@ -34,7 +31,7 @@ public class ARBackButtonController : MonoBehaviour
 
         canvasGo.AddComponent<GraphicRaycaster>();
 
-        GameObject buttonGo = new GameObject("Btn_AR_Back");
+        GameObject buttonGo = new GameObject("Btn_FishGallery_Back");
         buttonGo.transform.SetParent(canvasGo.transform, false);
 
         RectTransform buttonRect = buttonGo.AddComponent<RectTransform>();
@@ -49,14 +46,6 @@ public class ARBackButtonController : MonoBehaviour
 
         Button button = buttonGo.AddComponent<Button>();
         button.onClick.AddListener(OnBackClicked);
-
-        ColorBlock colors = button.colors;
-        colors.normalColor = new Color(0.02f, 0.16f, 0.24f, 0.82f);
-        colors.highlightedColor = new Color(0.04f, 0.28f, 0.38f, 0.9f);
-        colors.pressedColor = new Color(0.02f, 0.12f, 0.18f, 1f);
-        colors.selectedColor = colors.highlightedColor;
-        colors.disabledColor = new Color(0.1f, 0.1f, 0.1f, 0.5f);
-        button.colors = colors;
 
         GameObject textGo = new GameObject("Text");
         textGo.transform.SetParent(buttonGo.transform, false);
@@ -74,19 +63,15 @@ public class ARBackButtonController : MonoBehaviour
         text.color = Color.white;
         text.raycastTarget = false;
 
-        Debug.Log("[ARBackButtonController] AR geri butonu oluşturuldu.");
+        Debug.Log("[FishGalleryBackButtonController] Balık Galerisi geri butonu oluşturuldu.");
     }
 
     private void OnBackClicked()
     {
-        Debug.Log("[ARBackButtonController] Geri butonuna basıldı.");
+        Debug.Log("[FishGalleryBackButtonController] Geri butonuna basıldı. Quiz sonuç ekranına dönülecek.");
 
-        if (clearSelectedFishOnBack)
-        {
-            SelectedFishSession.Clear();
-            Debug.Log("[ARBackButtonController] SelectedFishSession temizlendi.");
-        }
+        GameSession.Instance?.RequestShowQuizResultOnReturn();
 
-        SceneLoader.LoadPreviousSceneOrFallback(SceneLoader.FishGalleryScene);
+        SceneManager.LoadScene(SceneLoader.LoginScene);
     }
 }

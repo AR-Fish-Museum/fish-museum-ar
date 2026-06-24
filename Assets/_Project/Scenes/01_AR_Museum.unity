@@ -1078,7 +1078,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98055df8bc941574b86e203c286ec2ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ARBackButtonController
-  fallbackSceneName: LoginScene
+  fallbackSceneName: 03_Fish_Gallery
   clearSelectedFishOnBack: 1
   buttonText: "\u2190 Geri"
   buttonSize: {x: 180, y: 64}
