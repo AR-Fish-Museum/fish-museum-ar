@@ -594,7 +594,6 @@ Android build alma
 ```
 
 Android tarafında test edilen konular:
-<<<<<<< HEAD
 
 * Kamera izni
 * AR sahnesi açılışı
@@ -610,17 +609,9 @@ Android tarafında test edilen konular:
 
 AR Balık Müzesi projesinin öğrenci girişi, öğretmen paneli, quiz sistemi, balık galerisi ve AR sahnesi akışı aşağıdaki tanıtım videosunda gösterilmektedir.
 
-[![AR Balık Müzesi Tanıtım Videosu](docs/Ekran görüntüsü 2026-06-25 172623.png)](https://www.youtube.com/watch?v=oxRk6NoB1nU)
-=======
+[![AR Balık Müzesi Tanıtım Videosu](docs/video-cover.png)](https://www.youtube.com/watch?v=oxRk6NoB1nU)
 
-* Kamera izni
-* AR sahnesi açılışı
-* Balık görünürlüğü
-* Balık materyalleri
-* UI butonları
-* Supabase bağlantısı
-* Öğrenci/öğretmen akışları
->>>>>>> 918ce9e4c61ad20c5280edf9e1602430d28c237b
+> Videoyu izlemek için görsele tıklayın.
 
 ---
 
