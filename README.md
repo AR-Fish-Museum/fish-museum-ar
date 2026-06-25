@@ -615,6 +615,18 @@ AR Balık Müzesi projesinin öğrenci girişi, öğretmen paneli, quiz sistemi,
 
 ---
 
+## 📚 Proje Dokümanları
+
+Proje kapsamında hazırlanan analiz, kalite ve yönetim dokümanlarına aşağıdaki bağlantılardan ulaşılabilir.
+
+| Doküman      | Açıklama                                                                        | Dosya                                     |
+| ------------ | ------------------------------------------------------------------------------- | ----------------------------------------- |
+| SWOT Analizi | Projenin güçlü yönleri, zayıf yönleri, fırsatları ve tehditlerini içerir.       | [İndir](docs/documents/SWOT_Analizi.docx) |
+| RAMS Örnek   | Proje kapsamında hazırlanan RAMS örnek dokümanıdır.                             | [İndir](docs/documents/RAMS_Ornek.docx)   |
+| YMGK         | Yazılım mühendisliği / proje geliştirme kapsamında hazırlanan YMGK dokümanıdır. | [İndir](docs/documents/YMGK.docx)         |
+
+---
+
 ## 📱 Hedef Platform
 
 İlk hedef platform:
