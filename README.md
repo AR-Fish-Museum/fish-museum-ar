@@ -627,6 +627,16 @@ Proje kapsamında hazırlanan analiz, kalite ve yönetim dokümanlarına aşağ�
 
 ---
 
+## 🧩 Proje Yönetimi / Trello Panosu
+
+Projenin görev takibi, geliştirme kartları, yapılacaklar listesi ve ilerleme durumu Trello panosu üzerinden takip edilmektedir.
+
+Trello panosuna aşağıdaki bağlantıdan ulaşılabilir:
+
+🔗 [AR Balık Müzesi Trello Panosu](https://trello.com/b/K6G3Cuh5/fish-museum-automation)
+
+---
+
 ## 📱 Hedef Platform
 
 İlk hedef platform:
